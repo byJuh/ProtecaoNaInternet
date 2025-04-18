@@ -9,8 +9,8 @@ export const styles = StyleSheet.create({
     },
     btn:{
         backgroundColor: '#9AB6CB',
-        height: 55,
-        width: 178,
+        height: '8%',
+        width: '50%',
         borderRadius: 100,
         alignItems: 'center',
         justifyContent: 'center'
