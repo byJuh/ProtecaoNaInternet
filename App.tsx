@@ -1,12 +1,16 @@
-import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
-import Rotas from "./src/routes";
+import { ScrollView, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { styles } from "./src/constants/styles";
 
-
-export default function App(){
+export default function TelaPrincipal(){
     return(
-        <NavigationContainer>
-          <Rotas/>
-        </NavigationContainer>
+        <View style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
+          <ScrollView>
+            <View style={styles.spaceContainer}>
+
+            </View>
+          </ScrollView>
+        </View>
     )
 }

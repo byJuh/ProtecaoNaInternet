@@ -1,10 +1,11 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { fontFamilies } from "../../constants/fonts";
+import { styles } from "../../constants/styles";
 
 export default function HomeScreen(){
     return(
-        <View style={styles.container}>
+        <View style={[styles.container, {backgroundColor: '#C8D9E6'}]}>
           <TouchableOpacity style={styles.btn}> 
             <Text style={styles.btnTexto}> Começar </Text>
           </TouchableOpacity>
@@ -12,7 +13,7 @@ export default function HomeScreen(){
     )
 }
 
-const styles = StyleSheet.create({
+/*const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
@@ -33,4 +34,4 @@ const styles = StyleSheet.create({
       fontFamily: fontFamilies.ROBOTO.normal
     }
 
-})
+})*/
