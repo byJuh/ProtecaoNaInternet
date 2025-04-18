@@ -3,8 +3,10 @@ import React from "react";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from "../screens/Home";
 import TelaPrincipal from "../Tabs/TelaPrincipal";
+import Tabs from "../Tabs";
+import { RootStackParamList } from "../utils/types";
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Rotas(){
     return(
@@ -15,8 +17,9 @@ export default function Rotas(){
                 options={{headerShown: false}}
             />
             <Stack.Screen
-                name = 'TelaPrincipal'
-                component={TelaPrincipal}
+                name = 'Tabs'
+                component={Tabs}
+                options={{headerShown: false}}
             />
         </Stack.Navigator>
     )

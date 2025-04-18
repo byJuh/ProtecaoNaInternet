@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
         borderRadius: 100,
         alignItems: 'center',
         justifyContent: 'center'
+       
     },
     btnTexto:{
       color: '#FFFFFF',
@@ -21,7 +22,14 @@ export const styles = StyleSheet.create({
       fontFamily: fontFamilies.ROBOTO.normal
     },
     spaceContainer:{
-        height: 677,
-        width: 317,
+        width: '90%',
+        height: '90%',
+        borderWidth: 4,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 15,
+        borderColor: '#567C8D'
+    },
+    scrollContainer:{
+        paddingTop: 35
     }
 })

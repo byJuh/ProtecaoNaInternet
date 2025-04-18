@@ -1,22 +1,17 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
+import { Dimensions } from "react-native";
 import Principal from "./TelaPrincipal";
 import Bloquear from "./Bloquear";
 
-
+const {width, height}  = Dimensions.get('window');
 const Tab = createBottomTabNavigator();
 
 const screenOptions = {
-    tabBarStyle: {
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        height: 50,
-    },
-    tabBarActiveTintColor: '#32AB6C',
-    tabBarInactiveTintColor: '#8F9BB3',
+    
+    tabBarActiveTintColor: '#567C8D',
+    tabBarInactiveTintColor: '#9DB2BF',
 };
 
 const tabs = [
@@ -42,9 +37,25 @@ export default function Tabs() {
                     component={tab.component}
                     options={{
                         headerShown: false,
-                        tabBarIcon: ({ color, size }) => (
-                            <MaterialIcons name={tab.icon} color={color} size={size} />
+                        tabBarIcon: ({ color }) => (
+                            <MaterialIcons name={tab.icon} color={color} size={42} />
                         ),
+                        tabBarLabelStyle:{
+                            fontSize: 16, 
+                            fontFamily: 'Roboto', 
+                            fontWeight: 300,
+                            paddingTop: 3
+                        },
+                        tabBarIconStyle: { 
+                            width: 42, 
+                            height: 42,
+                        },
+                        tabBarStyle: {
+                            backgroundColor: '#C8D9E6',
+                            borderTopLeftRadius: 30,
+                            borderTopRightRadius: 30,
+                            height: '10%'
+                        },
                     }}
                 />
             ))}
