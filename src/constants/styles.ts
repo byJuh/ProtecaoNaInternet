@@ -9,8 +9,8 @@ export const styles = StyleSheet.create({
     },
     btn:{
         backgroundColor: '#9AB6CB',
-        height: '8%',
-        width: '50%',
+        height: '6.6%',
+        width: '45%',
         borderRadius: 100,
         alignItems: 'center',
         justifyContent: 'center'
@@ -31,5 +31,21 @@ export const styles = StyleSheet.create({
     },
     scrollContainer:{
         paddingTop: 35
-    }
+    },
+    input: {
+        width: '70%',
+        height: '6.6%',
+        backgroundColor: '#F5EFEB',
+        borderRadius: 30,
+        marginBottom: 15,
+        fontSize: 15,
+        paddingLeft: 20,
+    },
+    texto:{
+        fontSize: 15,
+        color: '#6AA9D0',
+        fontFamily: fontFamilies.ROBOTO.bold,
+        textDecorationLine: 'underline',
+        marginBottom: 100
+    },
 })

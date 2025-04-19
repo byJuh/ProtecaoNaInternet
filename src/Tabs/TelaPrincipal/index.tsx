@@ -8,7 +8,7 @@ export default function TelaPrincipal(){
         <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%'}}>
             <SafeAreaView style={styles.spaceContainer}>
-
+                
             </SafeAreaView>
           </View>
         </SafeAreaView>

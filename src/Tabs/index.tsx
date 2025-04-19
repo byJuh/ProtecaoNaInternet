@@ -1,11 +1,10 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { Dimensions } from "react-native";
+import AdicionarMacAddress from "./AdicionarMacAddress";
 import Principal from "./TelaPrincipal";
 import Bloquear from "./Bloquear";
 
-const {width, height}  = Dimensions.get('window');
 const Tab = createBottomTabNavigator();
 
 const screenOptions = {
@@ -24,6 +23,11 @@ const tabs = [
         name: 'Bloquear',
         component: Bloquear,
         icon: 'app-blocking',
+    },
+    {
+        name: 'AdicionarMac',
+        component: AdicionarMacAddress,
+        icon: 'app-blocking', //MUDAR
     },
 ];
 

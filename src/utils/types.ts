@@ -2,6 +2,7 @@
 export type RootStackParamList = {
     //especificar undefined = rota nao tem parametro
     Home: undefined,
+    Cadastrar_Mac: undefined,
     Tabs: { screen: keyof TabsParamList };
 }
 
