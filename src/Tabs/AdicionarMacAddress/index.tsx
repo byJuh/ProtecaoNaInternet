@@ -2,13 +2,21 @@ import React, { useEffect, useState } from "react";
 import { Alert, FlatList, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "../../constants/styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../utils/types";
 
 type Dispositivo = {
     nome: string;
     mac: string;
 };
 
+type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
+
 export default function AdicionarMacAddress(){
+
+    const navigation = useNavigation<NavigationProps>();
+
     const [dispositivos, setDispositivos] = useState([]);
 
     //roda toda vez que entrar na tela
@@ -48,7 +56,10 @@ export default function AdicionarMacAddress(){
                 />
                 </SafeAreaView>
 
-                <TouchableOpacity style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156'}]}>
+                <TouchableOpacity 
+                    style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156'}]} 
+                    onPress={() => navigation.navigate('Cadastrar_Mac')}
+                >
                     <Text style={styles.btnTexto}>
                         Novo MAC
                     </Text>
