@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { styles } from "../../constants/styles";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+//MUDAR PARA FLATLIST TALVEZ (COM SEPARACAO)
 export default function TelaPrincipal(){
     return(
         <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>

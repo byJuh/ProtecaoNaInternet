@@ -27,7 +27,7 @@ const tabs = [
     {
         name: 'AdicionarMac',
         component: AdicionarMacAddress,
-        icon: 'app-blocking', //MUDAR
+        icon: 'add-circle-outline', 
     },
 ];
 

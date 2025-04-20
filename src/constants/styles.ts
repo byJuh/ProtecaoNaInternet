@@ -48,4 +48,19 @@ export const styles = StyleSheet.create({
         textDecorationLine: 'underline',
         marginBottom: 100
     },
+    spaceContainerAddBlock:{
+        width: '90%',
+        height: '80%',
+        borderWidth: 4,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 15,
+        borderColor: '#567C8D'
+    },
+    separator: { height: 8 },
+    lista: { marginBottom: 20 },
+    item: { padding: 10, backgroundColor: '#f0f0f0', borderRadius: 6 },
+    nome: { fontSize: 16, fontWeight: 'bold' },
+    mac: { fontSize: 14, color: '#666' },
+    
+    
 })

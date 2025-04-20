@@ -14,15 +14,14 @@ export default function HomeScreen(){
   const navigation = useNavigation<NavigationProps>();
 
   const mudandoTela = async () => {
-    try{  
-
+    try{ 
       const dispositivo = await AsyncStorage.getItem('dispositivos')
 
       if(dispositivo) navigation.navigate('Tabs', {screen: 'Principal'})
       else navigation.navigate('Cadastrar_Mac')
     
     }catch(error){
-      console.error("Erro ao verificar");
+      console.error("Erro ao verificar"); 
     }
     
   }

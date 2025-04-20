@@ -28,17 +28,16 @@ export default function Cadastro_macAddress(){
     }
     //armazenar no asyncStorage
     try{
-        const dispositivo = {
-            macAddress,
-            nomeDispositivo,
-        };
+      const dispositivosSalvos = await AsyncStorage.getItem('dispositivos');
+      let dispositivos = dispositivosSalvos ? JSON.parse(dispositivosSalvos) : [];
 
-        //salvando o nome com o mac
-        await AsyncStorage.setItem('dispositivos', JSON.stringify(dispositivo))
-        Alert.alert("Sucesso", "Dispositivo salvo!");
+      if (!Array.isArray(dispositivos)) dispositivos = [];
 
-        //indo para a tela principal
-        navigation.navigate('Tabs', {screen: 'Principal'})
+      dispositivos.push({ nome: nomeDispositivo, mac: macAddress });
+      await AsyncStorage.setItem('dispositivos', JSON.stringify(dispositivos));
+      
+      Alert.alert("Sucesso", "Dispositivo salvo!");
+      navigation.navigate('Tabs', { screen: 'Principal' });
 
     }catch (error){
         //nn foi possivel salvar (ALARME -> VER!!)
