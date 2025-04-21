@@ -18,14 +18,42 @@ export default function Cadastro_macAddress(){
   const [nomeDispositivo, setNomeDispositivo] = useState("");
 
    //fazer um set com formato FF:FF:FF:FF:FF:FF
-  const onChangeMacAddressHandler = async (macAddress: string) => setMacAddress(macAddress);
+  const onChangeMacAddressHandler = async (macAddress: string) => {
+    setMacAddress(macAddress);
+  }
+
   const onChangeNomeDispositivoHandler = async (nomeDispositivo: string) => setNomeDispositivo(nomeDispositivo);
+
+  //REVER
+  const formatMacAddress = (macAddress: string): string | null => {
+      if (!macAddress || macAddress.trim() === "" || macAddress.length != 12) {
+        return null;
+      }
+      let macAddressFormatted = macAddress.toUpperCase()
+      macAddressFormatted = macAddressFormatted.match(/.{1,2}/g)?.join(":") ?? "";
+      return macAddressFormatted;
+  }
 
   const cadastrarMacNome = async () =>{
     if(!macAddress || !nomeDispositivo){
         Alert.alert("Preencha todos os campos!");
         return;
     }
+
+    let macAddressFormatted = macAddress
+
+    var regex = /^(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2})$/
+    if(!macAddress.match(regex))  {
+      const formatted = formatMacAddress(macAddress);
+      if (formatted) {
+        macAddressFormatted = formatted;
+      } else {
+        // opcional: alertar erro
+        Alert.alert("MAC inválido!");
+        return;
+      }
+    }
+
     //armazenar no asyncStorage
     try{
       const dispositivosSalvos = await AsyncStorage.getItem('dispositivos');
@@ -33,10 +61,14 @@ export default function Cadastro_macAddress(){
 
       if (!Array.isArray(dispositivos)) dispositivos = [];
 
-      dispositivos.push({ nome: nomeDispositivo, mac: macAddress });
+      dispositivos.push({ nome: nomeDispositivo, mac: macAddressFormatted });
       await AsyncStorage.setItem('dispositivos', JSON.stringify(dispositivos));
       
       Alert.alert("Sucesso", "Dispositivo salvo!");
+
+      setMacAddress("");
+      setNomeDispositivo("");
+
       navigation.navigate('Tabs', { screen: 'Principal' });
 
     }catch (error){
@@ -48,7 +80,7 @@ export default function Cadastro_macAddress(){
 
   return(
     //diminuindo de tamanho -> VERIFICAR!!!
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <KeyboardAvoidingView style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
         <ScrollView contentContainerStyle={[styles.container, {backgroundColor: '#C8D9E6'}]} keyboardShouldPersistTaps="handled">
           <TextInput
@@ -56,11 +88,11 @@ export default function Cadastro_macAddress(){
               placeholder={'Mac Address'}
               placeholderTextColor={'#9DB2BF'}
               value={macAddress}
-              maxLength={17}
-              onChangeText={onChangeMacAddressHandler}                
+              maxLength={17}       
               keyboardType="visible-password"
-              autoCapitalize="characters"
+              autoCapitalize = {"characters"}
               autoCorrect={false}
+              onChangeText={onChangeMacAddressHandler}  
                 
           />
           <TextInput
