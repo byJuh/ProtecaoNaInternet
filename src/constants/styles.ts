@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { fontFamilies } from "./fonts";
+import type { PickerStyle } from 'react-native-picker-select';
 
 export const styles = StyleSheet.create({
     container: {
@@ -56,11 +57,57 @@ export const styles = StyleSheet.create({
         borderRadius: 15,
         borderColor: '#567C8D'
     },
-    separator: { height: 8 },
-    lista: { marginBottom: 20 },
-    item: { padding: 10, backgroundColor: '#f0f0f0', borderRadius: 6 },
-    nome: { fontSize: 16, fontWeight: 'bold' },
-    mac: { fontSize: 14, color: '#666' },
-    
+    separator: { 
+        height: 8 
+    },
+    lista: { 
+        marginBottom: 20 
+    },
+    item: { 
+        padding: 10, 
+        backgroundColor: '#f0f0f0', 
+        borderRadius: 6 
+    },
+    nome: { 
+        fontSize: 16, 
+        fontWeight: 'bold' 
+    },
+    mac: { 
+        fontSize: 14, 
+        color: '#666' 
+    },
+    select: {
+        borderRadius: 100, // Isso sim funcionará
+        width: '75%',
+        overflow: 'hidden',
+    }
     
 })
+
+export const pickerSelectStyles: PickerStyle = {
+    inputAndroid: {
+        backgroundColor: '#F5EFEB',
+        width: '100%',
+        paddingVertical: 10,
+        fontSize: 15,
+    },
+    placeholder: {
+        color: '#9DB2BF',           
+        fontSize: 15,          
+        fontStyle: 'italic',
+    },
+}
+
+export const pickerSelectStylesBloquear: PickerStyle = {
+    inputAndroid: {
+        backgroundColor: '#9AB6CB',
+        width: '100%',
+        paddingVertical: 2,
+        fontSize: 15,
+    },
+    placeholder: {
+        color: '#F5EFEB',           
+        fontSize: 15,          
+        fontStyle: 'italic',
+    },
+}

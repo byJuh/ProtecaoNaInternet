@@ -2,7 +2,7 @@ import React from "react";
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from "../screens/Home";
-import TelaPrincipal from "../Tabs/TelaPrincipal";
+import Excluir_macAddress from "../screens/Excluir_macAddress";
 import Tabs from "../Tabs";
 import { RootStackParamList } from "../utils/types";
 import Cadastro_macAddress from "../screens/Cadastro_macAddress";
@@ -20,6 +20,11 @@ export default function Rotas(){
             <Stack.Screen
                 name = 'Cadastrar_Mac'
                 component={Cadastro_macAddress}
+                options={{headerShown: false}}
+            />
+             <Stack.Screen
+                name = 'Excluir_Mac'
+                component={Excluir_macAddress}
                 options={{headerShown: false}}
             />
             <Stack.Screen

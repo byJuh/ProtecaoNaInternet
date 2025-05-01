@@ -5,11 +5,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
-
-type Dispositivo = {
-    nome: string;
-    mac: string;
-};
+import { carregarDispositivos } from "../../services/salvarMacAddress";
+import { Dispositivo } from "../../utils/types";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
@@ -17,25 +14,25 @@ export default function AdicionarMacAddress(){
 
     const navigation = useNavigation<NavigationProps>();
 
-    const [dispositivos, setDispositivos] = useState([]);
+    const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);
 
     //roda toda vez que entrar na tela
     useEffect(() => {
-        async function fetchDispositivos(){
-            try{
-                const dispotivosSalvos = await AsyncStorage.getItem('dispositivos')
-                 
-                if(dispotivosSalvos) {
-                    setDispositivos(JSON.parse(dispotivosSalvos)) 
-                }
-            }catch(error){
-                console.error("Erro ao carregar dispositivos:", error);
-                Alert.alert("Erro", "Não foi possível carregar os dispositivos");
-            }
+        async function fetchDispositivos() {
+          try {
+            const dispositivosSalvos = await carregarDispositivos();
             
-        } 
-        fetchDispositivos(); 
-    }, []);
+            if(dispositivosSalvos != null) setDispositivos(dispositivosSalvos);
+        
+          } catch (error: unknown) {
+            if (error instanceof Error) {
+              Alert.alert("Erro", error.message);
+            }
+          }
+        }
+      
+        fetchDispositivos();
+      }, []);
 
     const renderItem = ({ item }: { item: Dispositivo }) => (
         <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
@@ -56,14 +53,26 @@ export default function AdicionarMacAddress(){
                 />
                 </SafeAreaView>
 
-                <TouchableOpacity 
-                    style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156'}]} 
-                    onPress={() => navigation.navigate('Cadastrar_Mac')}
-                >
-                    <Text style={styles.btnTexto}>
-                        Novo MAC
-                    </Text>
-                </TouchableOpacity>
+                <View style={{flexDirection: 'row', height: '100%'}}>
+                    <TouchableOpacity 
+                        style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156'}]} 
+                        onPress={() => navigation.navigate('Cadastrar_Mac')}
+                    >
+                        <Text style={styles.btnTexto}>
+                            Novo MAC
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                        style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156', marginLeft: 10}]} 
+                        onPress={() => navigation.navigate('Excluir_Mac')}
+                    >
+                        <Text style={styles.btnTexto}>
+                            Excluir Mac
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+               
             </View>
         </SafeAreaView>
 

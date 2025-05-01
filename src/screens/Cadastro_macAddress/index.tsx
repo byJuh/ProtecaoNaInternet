@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { styles } from "../../constants/styles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
-
-//ESSA TELA SO APARECE UMA VEZ
+import { salvarDispositivos } from "../../services/salvarMacAddress";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
@@ -26,12 +24,17 @@ export default function Cadastro_macAddress(){
 
   //REVER
   const formatMacAddress = (macAddress: string): string | null => {
-      if (!macAddress || macAddress.trim() === "" || macAddress.length != 12) {
+      if (!macAddress || macAddress.trim() === "") {
         return null;
       }
+
       let macAddressFormatted = macAddress.toUpperCase()
-      macAddressFormatted = macAddressFormatted.match(/.{1,2}/g)?.join(":") ?? "";
-      return macAddressFormatted;
+
+      //removendo todos os caracteres que não sejam hexadecimais, deixando apenas os válidos
+      macAddressFormatted = macAddressFormatted.replace(/[^a-fA-F0-9]/g, '');
+
+      if(macAddressFormatted.length != 12) return null
+      else return macAddressFormatted.match(/.{1,2}/g)?.join(":") ?? '';
   }
 
   const cadastrarMacNome = async () =>{
@@ -42,29 +45,23 @@ export default function Cadastro_macAddress(){
 
     let macAddressFormatted = macAddress
 
-    var regex = /^(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2})$/
-    if(!macAddress.match(regex))  {
+    //regex para formato MacAddress, verificando se ja esta no formato
+    var regex = new RegExp(/^(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2})$/)
+
+    if(!macAddressFormatted.match(regex))  {
+      //caso nao esteja no formato, formatar
+      
       const formatted = formatMacAddress(macAddress);
-      if (formatted) {
-        macAddressFormatted = formatted;
-      } else {
-        // opcional: alertar erro
+      
+      if (formatted) macAddressFormatted = formatted;
+      else {
         Alert.alert("MAC inválido!");
         return;
       }
-    }
+    } else macAddressFormatted = macAddress.toUpperCase()
 
-    //armazenar no asyncStorage
     try{
-      const dispositivosSalvos = await AsyncStorage.getItem('dispositivos');
-      let dispositivos = dispositivosSalvos ? JSON.parse(dispositivosSalvos) : [];
-
-      if (!Array.isArray(dispositivos)) dispositivos = [];
-
-      dispositivos.push({ nome: nomeDispositivo, mac: macAddressFormatted });
-      await AsyncStorage.setItem('dispositivos', JSON.stringify(dispositivos));
-      
-      Alert.alert("Sucesso", "Dispositivo salvo!");
+      await salvarDispositivos(nomeDispositivo, macAddressFormatted)
 
       setMacAddress("");
       setNomeDispositivo("");
@@ -72,8 +69,9 @@ export default function Cadastro_macAddress(){
       navigation.navigate('Tabs', { screen: 'Principal' });
 
     }catch (error){
-        //nn foi possivel salvar (ALARME -> VER!!)
-        console.error("Erro ao salvar o MAC address", error);
+      if(error instanceof Error) {
+        Alert.alert("Erro", error.message);
+      }
     }
 
   }
