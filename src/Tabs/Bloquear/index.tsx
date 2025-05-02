@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Alert, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
-import { pickerSelectStyles, pickerSelectStylesBloquear, styles } from "../../constants/styles";
+import { pickerSelectStylesBloquear, styles } from "../../constants/styles";
 import RNPickerSelect from 'react-native-picker-select';
 import { Dispositivo } from "../../utils/types";
 import { carregarDispositivos } from "../../services/salvarMacAddress";
 
-//FAZER UM SELECT DE MAC ADDRESS E MOSTRAR APENAS OS SITES DELE PARA BLOQUEIO
 export default function Bloquear(){
     
     const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);

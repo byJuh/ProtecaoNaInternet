@@ -10,7 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
-export default function Excluir_macAddress(){
+export default function Excluir_cliente(){
 
   const navigation = useNavigation<NavigationProps>();
   const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);

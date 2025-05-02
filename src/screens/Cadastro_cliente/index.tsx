@@ -8,7 +8,7 @@ import { salvarDispositivos } from "../../services/salvarMacAddress";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
-export default function Cadastro_macAddress(){
+export default function Cadastro_cliente(){
 
   const navigation = useNavigation<NavigationProps>();
   
