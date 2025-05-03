@@ -1,21 +1,21 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 
-export async function salvarDispositivos(nomeDispositivo: string, macAddressFormatted: string){
+export async function salvarDispositivos(nomeDispositivo: string, macAddressFormatted: string, nomeGrupo: string){
     try{
         //pegando o item salvo, caso nao tenha ira ser criado
-        const dispositivosSalvos = await AsyncStorage.getItem('dispositivos');
+        const gruposSalvos = await AsyncStorage.getItem('gruposDispositivos');
         
         //verifica se tem algo, se tiver transforma em objeto, caso nao transforma em array vazio
-        let dispositivos = dispositivosSalvos ? JSON.parse(dispositivosSalvos) : [];
+        let grupos = gruposSalvos ? JSON.parse(gruposSalvos) : [];
 
         //verifica se realmente eh um array
-        if (!Array.isArray(dispositivos)) dispositivos = [];
+        if(!grupos[nomeGrupo]) grupos[nomeGrupo] =[]
 
-        dispositivos.push({ nome: nomeDispositivo, mac: macAddressFormatted });
-        await AsyncStorage.setItem('dispositivos', JSON.stringify(dispositivos));
+        grupos[nomeGrupo].push({ nome: nomeDispositivo, mac: macAddressFormatted });
+        await AsyncStorage.setItem('gruposDispositivos', JSON.stringify(grupos));
         
-        Alert.alert("Sucesso", "Dispositivo salvo!");
+        Alert.alert("Sucesso", "Dispositivo salvo no grupo!");
 
     }catch (error){
         throw new Error("Erro ao salvar dispostivo");

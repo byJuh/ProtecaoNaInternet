@@ -4,7 +4,7 @@ import { pickerSelectStyles, styles } from "../../constants/styles";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Dispositivo, RootStackParamList } from "../../utils/types";
 import RNPickerSelect from 'react-native-picker-select';
-import { carregarDispositivos } from "../../services/salvarMacAddress";
+import { carregarDispositivos } from "../../services/salvarDispositivos";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 

@@ -3,15 +3,15 @@ import { Alert, SafeAreaView, Text, TouchableOpacity, View } from "react-native"
 import { pickerSelectStylesBloquear, styles } from "../../constants/styles";
 import RNPickerSelect from 'react-native-picker-select';
 import { Dispositivo } from "../../utils/types";
-import { carregarDispositivos } from "../../services/salvarMacAddress";
+import { carregarDispositivos } from "../../services/salvarDispositivos";
 
 export default function Bloquear(){
     
     const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);
-      const [macAddress, setMacAddress] = useState("");
+    const [macAddress, setMacAddress] = useState("");
       
-      useEffect(() => {
-          async function fetchDispositivos() {
+    useEffect(() => {
+        async function fetchDispositivos() {
             try {
                 const dispositivosSalvos = await carregarDispositivos();
                   
@@ -24,11 +24,10 @@ export default function Bloquear(){
               }
             }
           fetchDispositivos();
-      }, []);
+    }, []);
     
     return(
         <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
-
             <View style = {[styles.select, {marginTop: 15, width: '50%', borderWidth: 2, borderColor: '#567C8D'}]}>
                 <RNPickerSelect 
                     placeholder={{ label: 'Dispositivos', value: null }}

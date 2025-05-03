@@ -80,6 +80,39 @@ export const styles = StyleSheet.create({
         borderRadius: 100, // Isso sim funcionará
         width: '75%',
         overflow: 'hidden',
+    },
+    explicacao: {
+        backgroundColor: '#FFFFFF',
+        width: '100%',
+        height: '75%', 
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        position: 'absolute',
+        top: '10%',
+        alignContent: 'center',
+    },
+    blocoTitulo: {
+        backgroundColor: '#2F4156',
+        width: '100%',
+        height: '10%', 
+        position: 'absolute',
+        top: '0%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: fontFamilies.ROBOTO.bold
+    },
+    textoTitulo:{
+        color: '#FFFFFF',
+        fontSize: 24,
+        marginRight: 10,
+        fontFamily: fontFamilies.ROBOTO.normal
+    },
+    textoExplicativo:{
+        color: '#000000',
+        fontFamily: fontFamilies.ROBOTO.normal,
+        margin: '10%',
+        fontSize: 25
     }
     
 })

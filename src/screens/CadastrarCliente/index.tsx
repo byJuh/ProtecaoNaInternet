@@ -4,12 +4,13 @@ import { styles } from "../../constants/styles";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
-import { salvarDispositivos } from "../../services/salvarMacAddress";
+import { salvarDispositivos } from "../../services/salvarDispositivos";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
-export default function Cadastro_cliente(){
+export default function Cadastro_cliente({ route }){
 
+  const {nomeGrupo} = route.params;
   const navigation = useNavigation<NavigationProps>();
   
   const [macAddress, setMacAddress] = useState("");

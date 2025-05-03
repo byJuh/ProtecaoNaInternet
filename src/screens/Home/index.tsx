@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "../../constants/styles";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -15,10 +15,10 @@ export default function HomeScreen(){
 
   const mudandoTela = async () => {
     try{ 
-      const dispositivo = await AsyncStorage.getItem('dispositivos')
+      const grupo = await AsyncStorage.getItem('grupos')
 
-      if(dispositivo) navigation.navigate('Tabs', {screen: 'Principal'})
-      else navigation.navigate('Cadastrar_Mac')
+      if(grupo) navigation.navigate('Tabs', {screen: 'Principal'})
+      else navigation.navigate('Tela_Explicacao')
     
     }catch(error){
       console.error("Erro ao verificar"); 

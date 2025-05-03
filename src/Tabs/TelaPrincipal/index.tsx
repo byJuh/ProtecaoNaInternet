@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Alert, View } from "react-native";
 import { pickerSelectStylesBloquear, styles } from "../../constants/styles";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { carregarDispositivos } from "../../services/salvarMacAddress";
-import { Dispositivo } from "../../utils/types";
+import { carregarDispositivos } from "../../services/salvarDispositivos";
+import { Dispositivo, Registro } from "../../utils/types";
 import RNPickerSelect from 'react-native-picker-select';
+import { getRegistro } from "../../services/requests";
 
 //MUDAR PARA FLATLIST TALVEZ (COM SEPARACAO)
 export default function TelaPrincipal(){

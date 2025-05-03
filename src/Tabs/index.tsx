@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import AdicionarMacAddress from "./AdicionarMacAddress";
+import AdicionarGrupos from "./AdicionarGrupos";
 import Principal from "./TelaPrincipal";
 import Bloquear from "./Bloquear";
 
@@ -25,8 +25,8 @@ const tabs = [
         icon: 'app-blocking',
     },
     {
-        name: 'AdicionarMac',
-        component: AdicionarMacAddress,
+        name: 'AdicionarGrupo',
+        component: AdicionarGrupos,
         icon: 'add-circle-outline', 
     },
 ];
