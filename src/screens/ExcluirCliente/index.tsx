@@ -2,24 +2,27 @@ import React, { useEffect, useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { pickerSelectStyles, styles } from "../../constants/styles";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Dispositivo, RootStackParamList } from "../../utils/types";
+import { Dispositivo, GruposDispositivos, RootStackParamList } from "../../utils/types";
 import RNPickerSelect from 'react-native-picker-select';
 import { carregarDispositivos } from "../../services/salvarDispositivos";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
+type RouteProps = RouteProp<RootStackParamList, 'Excluir_Mac'>;
 
-export default function Excluir_cliente(){
+export default function Excluir_cliente({ route } : {route: RouteProps}){
 
   const navigation = useNavigation<NavigationProps>();
+  const {nomeGrupo} = route.params;
+
   const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);
   const [macAddress, setMacAddress] = useState("");
   
   useEffect(() => {
       async function fetchDispositivos() {
         try {
-            const dispositivosSalvos = await carregarDispositivos();
+            const dispositivosSalvos = await carregarDispositivos(nomeGrupo);
               
             if(dispositivosSalvos != null) setDispositivos(dispositivosSalvos);
           
@@ -35,10 +38,35 @@ export default function Excluir_cliente(){
   const excluirDispositivo = async() => {
     try{
       if(macAddress != null){
-      
-        let dispositivosSalvos = dispositivos.filter(d => d.mac !== macAddress)
-        await AsyncStorage.setItem('dispositivos', JSON.stringify(dispositivosSalvos))
-  
+        
+        const gruposSalvos = await AsyncStorage.getItem('gruposDispositivos');
+        //if(!gruposSalvos)
+
+        let grupos: GruposDispositivos = {};
+        if (gruposSalvos) {
+          try {
+              grupos = JSON.parse(gruposSalvos);
+              
+              if (Array.isArray(grupos)) {
+                  grupos = {};
+              }
+          } catch (error) {
+              throw new Error("Erro ao salvar dispostivo");
+          }
+      }
+
+        let dispositivosSalvos = grupos[nomeGrupo].dispositivos.filter((d: Dispositivo) => d.mac !== macAddress)
+
+        if(dispositivosSalvos.length == 0)delete grupos[nomeGrupo]
+        else {
+          grupos[nomeGrupo] = {
+            dispositivos: dispositivosSalvos,
+            quantidade: dispositivosSalvos.length
+          }
+        }
+
+        await AsyncStorage.setItem('gruposDispositivos', JSON.stringify(grupos))
+        
         var mensagem = "Dispositivo de MAC: " + macAddress + " foi removido!"
         Alert.alert("Removido", mensagem)
 

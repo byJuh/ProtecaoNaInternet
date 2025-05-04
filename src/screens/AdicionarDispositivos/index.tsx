@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Alert, FlatList, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "../../constants/styles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
 import { carregarDispositivos } from "../../services/salvarDispositivos";
 import { Dispositivo } from "../../utils/types";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
+type RouteProps = RouteProp<RootStackParamList, 'Adicionar_Dispositivo'>;
 
-export default function AdicionarMacAddress(){
+export default function AdicionarDispositivos({ route } : {route: RouteProps}){
 
     const navigation = useNavigation<NavigationProps>();
+    const {nomeGrupo} = route.params;
 
     const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);
 
@@ -20,7 +21,7 @@ export default function AdicionarMacAddress(){
     useEffect(() => {
         async function fetchDispositivos() {
           try {
-            const dispositivosSalvos = await carregarDispositivos();
+            const dispositivosSalvos = await carregarDispositivos(nomeGrupo);
             
             if(dispositivosSalvos != null) setDispositivos(dispositivosSalvos);
         
@@ -45,18 +46,20 @@ export default function AdicionarMacAddress(){
         <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
             <View style={{ flex: 1, alignItems: 'center', width: '100%', paddingTop: 20}}>
                 <SafeAreaView style={styles.spaceContainerAddBlock}>
-                <FlatList
-                    data={dispositivos}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => index.toString()}
-                    ListEmptyComponent={<Text>Nenhum dispositivo cadastrado.</Text>}
-                />
+                    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+                        <FlatList
+                            data={dispositivos}
+                            renderItem={renderItem}
+                            keyExtractor={(item, index) => index.toString()}
+                            ListEmptyComponent={<Text>Nenhum dispositivo cadastrado.</Text>}
+                        />
+                    </ScrollView>
                 </SafeAreaView>
 
                 <View style={{flexDirection: 'row', height: '100%'}}>
                     <TouchableOpacity 
                         style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156'}]} 
-                        onPress={() => navigation.navigate('Cadastrar_Mac')}
+                        onPress={() => navigation.navigate('Cadastrar_Mac', {nomeGrupo: ''})}
                     >
                         <Text style={styles.btnTexto}>
                             Novo MAC
@@ -65,7 +68,7 @@ export default function AdicionarMacAddress(){
 
                     <TouchableOpacity 
                         style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156', marginLeft: 10}]} 
-                        onPress={() => navigation.navigate('Excluir_Mac')}
+                        onPress={() => navigation.navigate('Excluir_Mac', {nomeGrupo})}
                     >
                         <Text style={styles.btnTexto}>
                             Excluir Mac

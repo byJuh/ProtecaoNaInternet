@@ -7,6 +7,8 @@ import { RootStackParamList } from "../utils/types";
 import Cadastro_macAddress from "../screens/CadastrarCliente";
 import Tela_Explicacao from "../screens/TelaExplicação";
 import CadastrarGrupos from "../screens/CadastrarGrupos";
+import AdicionarDispositivos from '../screens/AdicionarDispositivos';
+import ExcluirGrupo from '../screens/ExcluirGrupo';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Rotas(){
@@ -25,6 +27,16 @@ export default function Rotas(){
             <Stack.Screen
                 name = 'Excluir_Mac'
                 component={Excluir_macAddress}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name = 'Excluir_Grupo'
+                component={ExcluirGrupo}
+                options={{headerShown: false}}
+            />
+             <Stack.Screen
+                name = 'Adicionar_Dispositivo'
+                component={AdicionarDispositivos}
                 options={{headerShown: false}}
             />
              <Stack.Screen

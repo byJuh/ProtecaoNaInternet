@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { styles } from "../../constants/styles";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
 import { salvarDispositivos } from "../../services/salvarDispositivos";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
+type RouteProps = RouteProp<RootStackParamList, 'Cadastrar_Mac'>;
 
-export default function Cadastro_cliente({ route }){
+export default function Cadastro_cliente({ route } : {route: RouteProps}){
 
   const {nomeGrupo} = route.params;
   const navigation = useNavigation<NavigationProps>();
@@ -62,12 +63,20 @@ export default function Cadastro_cliente({ route }){
     } else macAddressFormatted = macAddress.toUpperCase()
 
     try{
-      await salvarDispositivos(nomeDispositivo, macAddressFormatted)
+      await salvarDispositivos(nomeDispositivo, macAddressFormatted, nomeGrupo)
 
-      setMacAddress("");
-      setNomeDispositivo("");
-
-      navigation.navigate('Tabs', { screen: 'Principal' });
+      
+      Alert.alert("Sucesso", "Dispositivo salvo no grupo!",
+        [
+          {text: 'Ok', onPress: () => {
+            setMacAddress("");
+            setNomeDispositivo("");
+      
+            navigation.navigate('Tabs', { screen: 'Principal' });
+          }}
+        ]
+      );
+     
 
     }catch (error){
       if(error instanceof Error) {

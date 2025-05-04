@@ -113,8 +113,11 @@ export const styles = StyleSheet.create({
         fontFamily: fontFamilies.ROBOTO.normal,
         margin: '10%',
         fontSize: 25
-    }
-    
+    },
+    scroll:{
+        flexDirection: 'column',
+        alignContent: 'center',
+    },
 })
 
 export const pickerSelectStyles: PickerStyle = {

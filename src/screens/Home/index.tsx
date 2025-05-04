@@ -15,7 +15,7 @@ export default function HomeScreen(){
 
   const mudandoTela = async () => {
     try{ 
-      const grupo = await AsyncStorage.getItem('grupos')
+      const grupo = await AsyncStorage.getItem('gruposDispositivos')
 
       if(grupo) navigation.navigate('Tabs', {screen: 'Principal'})
       else navigation.navigate('Tela_Explicacao')
