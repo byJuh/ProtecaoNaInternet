@@ -57,6 +57,8 @@ export async function carregarDispositivos(nomeGrupo: string): Promise<Dispositi
         let dispositivosSalvos = await AsyncStorage.getItem('gruposDispositivos')
         const grupos: GruposDispositivos = dispositivosSalvos ? JSON.parse(dispositivosSalvos) : {};
 
+        if(!grupos[nomeGrupo] || !grupos[nomeGrupo].dispositivos) return [];
+        
         const dispositivos: Dispositivo[] = grupos[nomeGrupo].dispositivos
         console.error(dispositivos)
 

@@ -34,6 +34,7 @@ export default function TelaPrincipal(){
     useEffect(() => {
       async function fetchDispositivos() {
         try{
+          console.error(grupoSelecionado)
           if(grupoSelecionado != null) {
             const dispositivosSalvos = await carregarDispositivos(grupoSelecionado);
                     
