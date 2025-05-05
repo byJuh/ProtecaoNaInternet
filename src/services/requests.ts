@@ -4,10 +4,20 @@
 
 import { Registro } from "../utils/types";
 
+//passar por JSON
 export const getRegistro = async function (domain_name: string): Promise<Registro[]> {
+
+    const dominioParaRegistro = {
+        "domain-name": domain_name
+    }
+
     try{
-        const response = await fetch(`/get_registro?domain_name=${domain_name}`, { 
+        const response = await fetch(`/get_registro`, { 
             method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dominioParaRegistro)
         });
 
         if(!response.ok) throw new Error("Erro ao tentar pegar os dados!!");
@@ -31,8 +41,8 @@ POST /add_client - Adiciona um cliente a um grupo existente
 
 export const addDomainBlocklist = async function(domain: string, group: string) {
     const dominioParaBloquear = {
-        domain_name: domain,
-        group_name: group
+        "domain-name": domain,
+        "group-name": group
     }
 
     try{
@@ -56,7 +66,7 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
 
 export const createGroup = async function(group: string) {
     const novoGrupo = {
-        group_name: group
+        "group-name": group
     }
 
     try{
@@ -80,8 +90,8 @@ export const createGroup = async function(group: string) {
 export const addClient = async function(address: string, group: string) {
 
     const novoCliente = {
-        client_address: address,
-        group_name: group
+        "client-address": address,
+        "group-name": group
     }
 
     try{
@@ -107,9 +117,18 @@ export const addClient = async function(address: string, group: string) {
 */
 
 export const deleteClient = async function(client_address: string) {
+
+    const deletaCliente = {
+        "client-address": client_address
+    }
+
     try{
         const response = await fetch(`/delete_client?client_address=${client_address}`, { 
-            method: 'DELETE' 
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(deletaCliente)
         });
 
         if(!response.ok) throw new Error("Erro ao tentar excluir um cliente!!");
