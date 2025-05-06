@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
         borderWidth: 4,
         backgroundColor: '#FFFFFF',
         borderRadius: 15,
-        borderColor: '#567C8D'
+        borderColor: '#567C8D',
     },
     scrollContainer:{
         paddingTop: 35
@@ -61,7 +61,9 @@ export const styles = StyleSheet.create({
         height: 8 
     },
     lista: { 
-        marginBottom: 20 
+        marginBottom: 20,
+        fontSize: 20,
+        fontFamily: fontFamilies.ROBOTO.bold
     },
     item: { 
         padding: 10, 

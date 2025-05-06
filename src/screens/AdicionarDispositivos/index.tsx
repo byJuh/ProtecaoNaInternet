@@ -35,10 +35,10 @@ export default function AdicionarDispositivos({ route } : {route: RouteProps}){
         fetchDispositivos();
       }, []);
 
-    const renderItem = ({ item }: { item: Dispositivo }) => (
+      const renderItem = ({ item }: { item: Dispositivo }) => (
         <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
-            <Text style={{ fontWeight: 'bold' }}>{item.nome}</Text>
-            <Text>{item.mac}</Text>
+            <Text style={{ fontWeight: 'bold', fontSize: 22}}>{item.nome}</Text>
+            <Text style={{ fontSize: 20}}>{'\t'}{item.mac}</Text>
         </View>
       );
 
@@ -46,14 +46,12 @@ export default function AdicionarDispositivos({ route } : {route: RouteProps}){
         <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
             <View style={{ flex: 1, alignItems: 'center', width: '100%', paddingTop: 20}}>
                 <SafeAreaView style={styles.spaceContainerAddBlock}>
-                    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-                        <FlatList
-                            data={dispositivos}
-                            renderItem={renderItem}
-                            keyExtractor={(item, index) => index.toString()}
-                            ListEmptyComponent={<Text>Nenhum dispositivo cadastrado.</Text>}
-                        />
-                    </ScrollView>
+                    <FlatList
+                        data={dispositivos}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => index.toString()}
+                        ListEmptyComponent={<Text>Nenhum dispositivo cadastrado.</Text>}
+                    />
                 </SafeAreaView>
 
                 <View style={{flexDirection: 'row', height: '100%'}}>

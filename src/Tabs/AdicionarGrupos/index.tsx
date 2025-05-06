@@ -4,7 +4,7 @@ import { styles } from "../../constants/styles";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
-import { carregarDispositivos, carregarGrupos } from "../../services/salvarDispositivos";
+import { carregarGrupos } from "../../services/salvarDispositivos";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
@@ -37,10 +37,8 @@ export default function AdicionarGrupos(){
         <TouchableOpacity style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}
             onPress={() => navigation.navigate('Adicionar_Dispositivo', {nomeGrupo: item[0]})}
         >
-            <Text style = {styles.lista}>
-                {item[0]} {'\n\n'}
-                {'\t\t'} quantidade: {item[1]}
-            </Text>
+            <Text style={{ fontWeight: 'bold', fontSize: 22}}>{item[0]}</Text>
+            <Text style={{ fontSize: 20}}>{'\t\t'} quantidade: {item[1]}</Text>
         </TouchableOpacity>
     );
 
@@ -48,15 +46,12 @@ export default function AdicionarGrupos(){
         <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
             <View style={{ flex: 1, alignItems: 'center', width: '100%', paddingTop: 20}}>
                 <SafeAreaView style={styles.spaceContainerAddBlock}>
-                    <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-                        <FlatList
-                            data={dispositivos}
-                            renderItem={renderItem}
-                            keyExtractor={([nome]) => nome}
-                            ListEmptyComponent={<Text>Nenhum dispositivo cadastrado.</Text>}
-                        />
-                    </ScrollView>
-                    
+                    <FlatList
+                        data={dispositivos}
+                        renderItem={renderItem}
+                        keyExtractor={([nome]) => nome}
+                        ListEmptyComponent={<Text>Nenhum dispositivo cadastrado.</Text>}
+                    />
                 </SafeAreaView>
 
                 <View style={{flexDirection: 'row', height: '100%'}}>

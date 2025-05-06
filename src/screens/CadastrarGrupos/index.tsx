@@ -6,6 +6,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
 import { useNavigation } from "@react-navigation/native";
 import { carregarGrupos } from "../../services/salvarDispositivos";
+import { createGroup } from "../../services/requests";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Cadastrar_Mac'>;
 
@@ -20,7 +21,13 @@ export default function CadastrarGrupos(){
             const grupo = await carregarGrupos()
 
             if(grupo && !grupo.has(nomeGrupo)) {
-                navigation.navigate('Cadastrar_Mac', {nomeGrupo: nomeGrupo})
+                const response = await createGroup(nomeGrupo)
+
+                if(response){
+                    Alert.alert(response)
+                    navigation.navigate('Cadastrar_Mac', {nomeGrupo: nomeGrupo})
+                }
+                
             }else{
                 Alert.alert("Esse grupo já existe!!")
                 return;

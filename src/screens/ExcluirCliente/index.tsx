@@ -57,7 +57,7 @@ export default function Excluir_cliente({ route } : {route: RouteProps}){
 
         let dispositivosSalvos = grupos[nomeGrupo].dispositivos.filter((d: Dispositivo) => d.mac !== macAddress)
 
-        if(dispositivosSalvos.length == 0)delete grupos[nomeGrupo]
+        if(dispositivosSalvos.length == 0) delete grupos[nomeGrupo]
         else {
           grupos[nomeGrupo] = {
             dispositivos: dispositivosSalvos,

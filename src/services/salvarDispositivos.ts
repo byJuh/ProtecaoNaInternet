@@ -1,11 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Alert } from "react-native";
 import { GruposDispositivos } from "../utils/types";
 
 export async function salvarDispositivos(nomeDispositivo: string, macAddressFormatted: string, nomeGrupo: string){
     try{
-        console.error('Valores recebidos:', { nomeDispositivo, macAddressFormatted, nomeGrupo });
-
         //pegando o item salvo, caso nao tenha ira ser criado
         const gruposSalvos = await AsyncStorage.getItem('gruposDispositivos');
         
@@ -60,11 +57,9 @@ export async function carregarDispositivos(nomeGrupo: string): Promise<Dispositi
         if(!grupos[nomeGrupo] || !grupos[nomeGrupo].dispositivos) return [];
         
         const dispositivos: Dispositivo[] = grupos[nomeGrupo].dispositivos
-        console.error(dispositivos)
 
         return dispositivos
     }catch(error){
-        console.error("Here. Dipositivos!!");
         throw new Error("Erro ao carregar os dispositivos.");
     }
             
@@ -86,11 +81,9 @@ export async function carregarGrupos(): Promise<Map<string, number>> {
             resultadosMap.set(key, quantidade);
         }
 
-        console.error(resultadosMap)
         return resultadosMap
 
     }catch(error){
-        console.error("Here. Grupos!!");
         throw new Error("Erro ao carregar grupos.");
     }
             

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, View } from "react-native";
+import { Alert, FlatList, Text, View } from "react-native";
 import { pickerSelectStylesBloquear, styles } from "../../constants/styles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { carregarDispositivos, carregarGrupos } from "../../services/salvarDispositivos";
@@ -34,7 +34,6 @@ export default function TelaPrincipal(){
     useEffect(() => {
       async function fetchDispositivos() {
         try{
-          console.error(grupoSelecionado)
           if(grupoSelecionado != null) {
             const dispositivosSalvos = await carregarDispositivos(grupoSelecionado);
                     
@@ -49,19 +48,28 @@ export default function TelaPrincipal(){
       fetchDispositivos();
     }, [grupoSelecionado])
 
-    /*const pegandoRegistros = async (value: string) => {
+    const pegandoRegistros = async (value: string) => {
       //realizar request
       try{
+        console.error(value)
         const response = await getRegistro(value);
-        setRegistros(response);
-        setMacAddress(value);
+        
+        console.error(response)
+        if(response) setMacAddress(value);
 
       }catch (error: unknown) {
-         // if (error instanceof Error) {
-         //   Alert.alert("Erro", error.message);
-         // } 
+         if (error instanceof Error) {
+            Alert.alert("Erro", error.message);
+         } 
       }
-    }*/
+    }
+
+    const renderItem = ({ item }: { item: Dispositivo }) => (
+          <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 22}}>{item.nome}</Text>
+              <Text style={{ fontSize: 20}}>{'\t'}{item.mac}</Text>
+          </View>
+    );
         
     return(
         <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
@@ -87,7 +95,7 @@ export default function TelaPrincipal(){
                           label: `${d.nome} (${d.mac})`, 
                           value: d.mac
                       }))}
-                      onValueChange={(value) => setMacAddress(value)} 
+                      onValueChange={(value) => pegandoRegistros(value)} 
                       value={macAddress}
                       style={pickerSelectStylesBloquear}
                   />
@@ -96,7 +104,7 @@ export default function TelaPrincipal(){
 
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%'}}>
             <SafeAreaView style={styles.spaceContainer}>
-      
+              
             </SafeAreaView>
           </View>
 

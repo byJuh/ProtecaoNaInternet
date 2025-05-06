@@ -8,12 +8,14 @@ import { Registro } from "../utils/types";
 export const getRegistro = async function (domain_name: string): Promise<Registro[]> {
 
     const dominioParaRegistro = {
-        "domain-name": domain_name
+        "domain-name": domain_name,
+        "length": '10'
     }
 
     try{
-        const response = await fetch(`/get_registro`, { 
-            method: 'GET',
+        console.error("estou no try")
+        const response = await fetch(`http://192.168.0.21:8000/get_registro`, { 
+            method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
@@ -21,7 +23,8 @@ export const getRegistro = async function (domain_name: string): Promise<Registr
         });
 
         if(!response.ok) throw new Error("Erro ao tentar pegar os dados!!");
-
+        
+        console.error(response)
         return response.json();
     }catch(error){
         throw new Error("Erro ao tentar pegar os dados!!");
@@ -66,18 +69,17 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
 
 export const createGroup = async function(group: string) {
     const novoGrupo = {
-        "group-name": group
+        'group-name': group
     }
 
     try{
-        const response = await fetch('/create_group', { 
+        const response = await fetch('http://192.168.0.21:8000/create_group', { 
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(novoGrupo)
         });
-
         if(!response.ok) throw new Error("Erro ao tentar enviar o nome do grupo!!");
 
         return response.json();
@@ -90,12 +92,12 @@ export const createGroup = async function(group: string) {
 export const addClient = async function(address: string, group: string) {
 
     const novoCliente = {
-        "client-address": address,
-        "group-name": group
+        'client_address': address,
+        'group_name': group
     }
 
     try{
-        const response = await fetch('/add_client', { 
+        const response = await fetch('http://192.168.0.21:8000/add_client', { 
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",

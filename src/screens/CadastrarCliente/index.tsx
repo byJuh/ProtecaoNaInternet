@@ -5,6 +5,7 @@ import { RouteProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
 import { salvarDispositivos } from "../../services/salvarDispositivos";
+import { addClient } from "../../services/requests";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 type RouteProps = RouteProp<RootStackParamList, 'Cadastrar_Mac'>;
@@ -63,20 +64,25 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
     } else macAddressFormatted = macAddress.toUpperCase()
 
     try{
-      await salvarDispositivos(nomeDispositivo, macAddressFormatted, nomeGrupo)
+      const response = await addClient(macAddressFormatted, nomeGrupo)
+      
+      console.error(response)
+      if(response){
+        await salvarDispositivos(nomeDispositivo, macAddressFormatted, nomeGrupo)
 
-      
-      Alert.alert("Sucesso", "Dispositivo salvo no grupo!",
-        [
-          {text: 'Ok', onPress: () => {
-            setMacAddress("");
-            setNomeDispositivo("");
-      
-            navigation.navigate('Tabs', { screen: 'Principal' });
-          }}
-        ]
-      );
+        Alert.alert("Sucesso", "Dispositivo salvo no grupo!",
+          [
+            {text: 'Ok', onPress: () => {
+              setMacAddress("");
+              setNomeDispositivo("");
+        
+              navigation.navigate('Tabs', { screen: 'Principal' });
+            }}
+          ]
+        );
      
+      }
+      
 
     }catch (error){
       if(error instanceof Error) {
