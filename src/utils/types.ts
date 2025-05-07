@@ -36,5 +36,5 @@ export type Dispositivo = {
 
 //definindo o tipo dispositivo para salvar e pegar os dados
 export type Registro = {
-    dominio: string;
+    domain: string;
 };

@@ -22,6 +22,9 @@ export const getRegistro = async function (domain_name: string): Promise<Registr
             body: JSON.stringify(dominioParaRegistro)
         });
 
+        console.error(response.ok)
+
+
         if(!response.ok) throw new Error("Erro ao tentar pegar os dados!!");
         
         console.error(response)
@@ -50,18 +53,21 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
 
     try{
         const response = await fetch('/add_domain_blocklist', { 
-            method: 'POST',
+            method: 'GET',
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(dominioParaBloquear)
         });
 
+        console.error(response.ok)
+        console.error(response)
         if(!response.ok) throw new Error("Erro ao tentar enviar os dados!!");
 
         return response.json();
 
     }catch(error){
+        console.error("!catch")
         throw new Error("Erro ao tentar enviar os dados!!");
     }
     

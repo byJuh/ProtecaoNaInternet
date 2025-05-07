@@ -49,13 +49,18 @@ export default function TelaPrincipal(){
     }, [grupoSelecionado])
 
     const pegandoRegistros = async (value: string) => {
-      //realizar request
       try{
         console.error(value)
         const response = await getRegistro(value);
         
         console.error(response)
-        if(response) setMacAddress(value);
+
+        if(response) {
+          setRegistros(response)
+          setMacAddress(value);
+        }
+      
+        console.error(registros)
 
       }catch (error: unknown) {
          if (error instanceof Error) {
@@ -64,10 +69,9 @@ export default function TelaPrincipal(){
       }
     }
 
-    const renderItem = ({ item }: { item: Dispositivo }) => (
+    const renderItem = ({ item }: { item: Registro }) => (
           <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
-              <Text style={{ fontWeight: 'bold', fontSize: 22}}>{item.nome}</Text>
-              <Text style={{ fontSize: 20}}>{'\t'}{item.mac}</Text>
+              <Text style={{ fontWeight: 'bold', fontSize: 22}}>{item.domain}</Text>
           </View>
     );
         
@@ -104,7 +108,11 @@ export default function TelaPrincipal(){
 
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%'}}>
             <SafeAreaView style={styles.spaceContainer}>
-              
+                <FlatList 
+                  data={registros} 
+                  renderItem={renderItem}  
+                  ListEmptyComponent={<Text>Nenhum dispositivo cadastrado.</Text>}              
+              />
             </SafeAreaView>
           </View>
 
