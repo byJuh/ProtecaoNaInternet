@@ -66,7 +66,6 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
     try{
       const response = await addClient(macAddressFormatted, nomeGrupo)
       
-      console.error(response)
       if(response){
         await salvarDispositivos(nomeDispositivo, macAddressFormatted, nomeGrupo)
 

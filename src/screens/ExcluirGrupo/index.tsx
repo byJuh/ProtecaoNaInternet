@@ -42,47 +42,43 @@ export default function ExcluirGrupo(){
             `Tem certeza que deseja excluir o grupo: ${grupo}? \n
              Irá excluir os dispositivos também!!`,
             [
-                {text: 'Sim', onPress: async() => {
-                    try{ 
-                        const gruposSalvos = await AsyncStorage.getItem('gruposDispositivos');
+              {text: 'Sim', onPress: async() => {
+              try{ 
+                const gruposSalvos = await AsyncStorage.getItem('gruposDispositivos');
 
-                        let grupos: GruposDispositivos = {};
-                        if (gruposSalvos) {
-                            try {
-                                grupos = JSON.parse(gruposSalvos);
-                                
-                                if (Array.isArray(grupos)) {
-                                    grupos = {};
-                                }
-                            } catch (error) {
-                                throw new Error("Erro ao salvar dispostivo");
-                            }
-                        }
-                        delete grupos[grupo]
-                        await AsyncStorage.setItem('gruposDispositivos', JSON.stringify(grupos))
-            
-                        var mensagem = "Grupo: " + grupo + " foi removido!"
-                        Alert.alert("Removido", 
-                            mensagem,
-                            [
-                                {text: 'Ok', onPress: async () => {
-                                    if(!grupos[grupo]){
-                                        setGrupo('');
-                                        navigation.navigate('Tabs', { screen: 'Principal' });
-                                    }
-                                }}
-                            ]
-                        )
-                        
-                        
-                            
-                    
-                    }catch(error){
-                        Alert.alert("Não foi possível remover!!")
+                let grupos: GruposDispositivos = {};
+                if (gruposSalvos) {
+                  try {
+                    grupos = JSON.parse(gruposSalvos);
+                                      
+                    if (Array.isArray(grupos)) {
+                      grupos = {};
                     }
-                }},
-                {text: 'Não', onPress: () => navigation.navigate('Tabs', {screen: 'AdicionarGrupos'})}
-            ],
+                  } catch (error) {
+                    throw new Error("Erro ao salvar dispostivo");
+                  }
+                }
+                delete grupos[grupo]
+                await AsyncStorage.setItem('gruposDispositivos', JSON.stringify(grupos))
+                  
+                var mensagem = "Grupo: " + grupo + " foi removido!"
+                Alert.alert("Removido", 
+                  mensagem,
+                  [
+                    {text: 'Ok', onPress: async () => {
+                      if(!grupos[grupo]){
+                        setGrupo('');
+                        navigation.navigate('Tabs', { screen: 'Principal' });
+                      }
+                    }}
+                  ]
+                )
+              }catch(error){
+                Alert.alert("Não foi possível remover!!")
+              }
+            }},
+              {text: 'Não', onPress: () => navigation.navigate('Tabs', {screen: 'AdicionarGrupos'})}
+        ],
             {cancelable:false},
         )
   }
