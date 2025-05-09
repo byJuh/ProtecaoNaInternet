@@ -7,6 +7,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { carregarDispositivos, carregarGrupos } from "../../services/salvarDispositivos";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp, useNavigation } from "@react-navigation/native";
+import { deleteGroup } from "../../services/requests";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
@@ -34,54 +35,54 @@ export default function ExcluirGrupo(){
   }, []);
 
   const excluirDispositivo = async() => {
-    
+    Alert.alert(
+      'Confirmação',
+      `Tem certeza que deseja excluir o grupo: ${grupo}? \n
+       Irá excluir os dispositivos também!!`,
+    [
+    {text: 'Sim', onPress: async() => {
+    try{ 
+      const response = await deleteGroup(grupo)
 
-        //FAZER UMA CONFIRMAÇÃO
-        Alert.alert(
-            'Confirmação',
-            `Tem certeza que deseja excluir o grupo: ${grupo}? \n
-             Irá excluir os dispositivos também!!`,
-            [
-              {text: 'Sim', onPress: async() => {
-              try{ 
-                const gruposSalvos = await AsyncStorage.getItem('gruposDispositivos');
+      if(response){
+          const gruposSalvos = await AsyncStorage.getItem('gruposDispositivos');
 
-                let grupos: GruposDispositivos = {};
-                if (gruposSalvos) {
-                  try {
-                    grupos = JSON.parse(gruposSalvos);
-                                      
-                    if (Array.isArray(grupos)) {
-                      grupos = {};
-                    }
-                  } catch (error) {
-                    throw new Error("Erro ao salvar dispostivo");
-                  }
-                }
-                delete grupos[grupo]
-                await AsyncStorage.setItem('gruposDispositivos', JSON.stringify(grupos))
-                  
-                var mensagem = "Grupo: " + grupo + " foi removido!"
-                Alert.alert("Removido", 
-                  mensagem,
-                  [
-                    {text: 'Ok', onPress: async () => {
-                      if(!grupos[grupo]){
-                        setGrupo('');
-                        navigation.navigate('Tabs', { screen: 'Principal' });
-                      }
-                    }}
-                  ]
-                )
-              }catch(error){
-                Alert.alert("Não foi possível remover!!")
+          let grupos: GruposDispositivos = {};
+          if (gruposSalvos) {
+            try {
+              grupos = JSON.parse(gruposSalvos);
+                                          
+              if (Array.isArray(grupos)) {
+                grupos = {};
               }
-            }},
-              {text: 'Não', onPress: () => navigation.navigate('Tabs', {screen: 'AdicionarGrupos'})}
-        ],
-            {cancelable:false},
-        )
-  }
+            } catch (error) {
+              throw new Error("Erro ao salvar dispostivo");
+            }
+          }
+          delete grupos[grupo]
+          await AsyncStorage.setItem('gruposDispositivos', JSON.stringify(grupos))
+                      
+          var mensagem = "Grupo: " + grupo + " foi removido!"
+          Alert.alert("Removido", 
+            mensagem,
+            [
+              {text: 'Ok', onPress: async () => {
+                if(!grupos[grupo]){
+                  setGrupo('');
+                  navigation.navigate('Tabs', { screen: 'Principal' });
+                }
+              }}
+            ]
+          )
+       
+      }
+    }catch(error){
+      Alert.alert("Não foi possível remover!!")
+    }
+  }},
+  {text: 'Não', onPress: () => navigation.navigate('Tabs', {screen: 'AdicionarGrupos'})}], {cancelable:false})
+      
+}
 
   return(
     <View style = {[styles.container, {backgroundColor: '#C8D9E6'}]}>

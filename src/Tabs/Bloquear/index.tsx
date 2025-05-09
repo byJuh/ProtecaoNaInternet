@@ -17,39 +17,31 @@ export default function Bloquear(){
     const [grupoSelecionado, setGruposSelecionados] = useState("");
     const [registros, setRegistros] = useState<Registro[]>([]);
     const [selectedValues, setSelectedValues] = useState("");
-
+    
     fetchGrupos(setGrupos, setGruposSelecionados);
     
     useEffect(() => {
         fetchDispositivos(grupoSelecionado, setMacAddress, setDispositivos);
     }, [grupoSelecionado])
-        
-   useEffect(() => {
+
+    //rodar na primeiraVez
+    useEffect(() => {
       if(!macAddress) return;
+      pegandoRegistros(setRegistros, macAddress)
+    }, [macAddress, grupoSelecionado])
+        
+    //rodar daqui 4 min
+    useEffect(() => {
+      if(!macAddress ||  grupos.size === 0) return;
     
       const interval = setInterval(() => {
         pegandoRegistros(setRegistros, macAddress)
       }, 120000)
     
-      pegandoRegistros(setRegistros, macAddress)
-    
       return () => clearInterval(interval)
     }, [macAddress, grupoSelecionado])
-
-    useEffect(() => {
-      console.error("Valores selecionados:", selectedValues);
-  }, [selectedValues]);
   
-    const pegandoValores = (domain: string, isChecked: boolean) => {
-      /** if(isChecked){
-        selectedValues.push(domain)
-        setSelectedValues(selectedValues)
-      }else{
-        const values = selectedValues.filter((x) => x !== domain)
-        setSelectedValues(values)
-      }
-      */
-
+    const pegandoValores = (domain: string) => {
       setSelectedValues(domain)
     }
 
@@ -61,7 +53,7 @@ export default function Bloquear(){
             unFillColor="#FFFFFF"
             text={item.domain}
             innerIconStyle={{ borderWidth: 2 }}
-            onPress={(isChecked: boolean) => pegandoValores (item.domain, isChecked)}
+            onPress={() => pegandoValores (item.domain)}
             isChecked={selectedValues === item.domain}
           />
           <Text style={{fontWeight: 'bold', fontSize: 18}}>

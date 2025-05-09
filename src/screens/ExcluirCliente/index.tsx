@@ -7,6 +7,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { carregarDispositivos } from "../../services/salvarDispositivos";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp, useNavigation } from "@react-navigation/native";
+import { deleteClient } from "../../services/requests";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 type RouteProps = RouteProp<RootStackParamList, 'Excluir_Mac'>;
@@ -40,37 +41,38 @@ export default function Excluir_cliente({ route } : {route: RouteProps}){
       if(macAddress != null){
         
         const gruposSalvos = await AsyncStorage.getItem('gruposDispositivos');
-        //if(!gruposSalvos)
-
-        let grupos: GruposDispositivos = {};
-        if (gruposSalvos) {
-          try {
-              grupos = JSON.parse(gruposSalvos);
-              
-              if (Array.isArray(grupos)) {
-                  grupos = {};
-              }
-          } catch (error) {
-              throw new Error("Erro ao salvar dispostivo");
+        
+        if(gruposSalvos){
+          let grupos: GruposDispositivos = {};
+          if (gruposSalvos) {
+            try {
+                grupos = JSON.parse(gruposSalvos);
+                
+                if (Array.isArray(grupos)) {
+                    grupos = {};
+                }
+            } catch (error) {
+                throw new Error("Erro ao salvar dispostivo");
+            }
           }
-      }
-
-        let dispositivosSalvos = grupos[nomeGrupo].dispositivos.filter((d: Dispositivo) => d.mac !== macAddress)
-
-        if(dispositivosSalvos.length == 0) delete grupos[nomeGrupo]
-        else {
+  
+          let dispositivosSalvos = grupos[nomeGrupo].dispositivos.filter((d: Dispositivo) => d.mac !== macAddress)
+  
+        
           grupos[nomeGrupo] = {
             dispositivos: dispositivosSalvos,
             quantidade: dispositivosSalvos.length
           }
+  
+          await AsyncStorage.setItem('gruposDispositivos', JSON.stringify(grupos))
+          
+          var mensagem = "Dispositivo de MAC: " + macAddress + " foi removido!"
+          Alert.alert("Removido", mensagem)
+  
+          navigation.navigate('Tabs', { screen: 'Principal' });
         }
 
-        await AsyncStorage.setItem('gruposDispositivos', JSON.stringify(grupos))
         
-        var mensagem = "Dispositivo de MAC: " + macAddress + " foi removido!"
-        Alert.alert("Removido", mensagem)
-
-        navigation.navigate('Tabs', { screen: 'Principal' });
       }
     }catch(error){
       Alert.alert("Não foi possível remover!!")

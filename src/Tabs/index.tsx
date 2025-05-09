@@ -14,11 +14,11 @@ const screenOptions = {
 };
 
 const tabs = [
-    {
-        name: 'Principal',
-        component: Principal,
-        icon: 'list-alt',
-    },
+    //{
+    //    name: 'Principal',
+    //    component: Principal,
+    //    icon: 'list-alt',
+    //},
     {
         name: 'Bloquear',
         component: Bloquear,

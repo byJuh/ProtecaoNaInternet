@@ -25,7 +25,7 @@ export const getRegistro = async function (domain_name: string): Promise<Registr
         console.error(response.ok)
 
 
-        if(!response.ok) throw new Error("Erro ao tentar pegar os dados!!");
+        if(response.status !== 200) throw new Error("Erro ao tentar pegar os dados!!");
         
         console.error(response)
         return response.json();
@@ -61,14 +61,11 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
             body: JSON.stringify(dominioParaBloquear)
         });
 
-        console.error(response.ok)
-        console.error(response)
-        if(!response.ok) throw new Error("Erro ao tentar enviar os dados!!");
+        if(response.status !== 200) throw new Error("Erro ao tentar enviar os dados!!");
 
         return response.json();
 
     }catch(error){
-        console.error("!catch")
         throw new Error("Erro ao tentar enviar os dados!!");
     }
     
@@ -87,7 +84,8 @@ export const createGroup = async function(group: string) {
             },
             body: JSON.stringify(novoGrupo)
         });
-        if(!response.ok) throw new Error("Erro ao tentar enviar o nome do grupo!!");
+
+        if(response.status !== 200) throw new Error("Erro ao tentar enviar o nome do grupo!!");
 
         return response.json();
     }catch(error){
@@ -112,7 +110,7 @@ export const addClient = async function(address: string, group: string) {
             body: JSON.stringify(novoCliente)
         });
 
-        if(!response.ok) throw new Error("Erro ao tentar enviar um cliente!!");
+        if(response.status !== 200) throw new Error("Erro ao tentar enviar um cliente!!");
 
         return response.json();
     }catch(error){
@@ -132,7 +130,7 @@ export const deleteClient = async function(client_address: string) {
     }
 
     try{
-        const response = await fetch(`/delete_client?client_address=${client_address}`, { 
+        const response = await fetch(`http://192.168.0.21:8000/delete_client`, { 
             method: 'DELETE',
             headers: {
                 "Content-Type": "application/json",
@@ -140,11 +138,35 @@ export const deleteClient = async function(client_address: string) {
             body: JSON.stringify(deletaCliente)
         });
 
-        if(!response.ok) throw new Error("Erro ao tentar excluir um cliente!!");
+        if(response.status !== 200) throw new Error("Erro ao tentar excluir um cliente!!");
 
         return response.json();
     }catch(error){
         throw new Error("Erro ao tentar excluir um cliente!!");
+    }
+    
+}
+
+export const deleteGroup = async function(grupo: string) {
+
+    const deletaGrupo = {
+        "group_name": grupo
+    }
+
+    try{
+        const response = await fetch(`http://192.168.0.21:8000/delete_group`, { 
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(deletaGrupo)
+        });
+
+        if(response.status !== 200) throw new Error("Erro ao tentar excluir um grupo!!");
+
+        return response.json();
+    }catch(error){
+        throw new Error("Erro ao tentar excluir um grupo!!");
     }
     
 }
