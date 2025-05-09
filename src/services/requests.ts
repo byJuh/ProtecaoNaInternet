@@ -9,7 +9,7 @@ export const getRegistro = async function (domain_name: string): Promise<Registr
 
     const dominioParaRegistro = {
         "domain-name": domain_name,
-        "length": '10'
+        "length": '30'
     }
 
     try{
@@ -52,8 +52,9 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
     }
 
     try{
-        const response = await fetch('/add_domain_blocklist', { 
-            method: 'GET',
+        console.error("estou no try")
+        const response = await fetch('http://192.168.0.21:8000/add_domain_blocklist', { 
+            method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },

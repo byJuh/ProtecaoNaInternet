@@ -5,8 +5,9 @@ import RNPickerSelect from 'react-native-picker-select';
 import { Dispositivo, Registro } from "../../utils/types";
 import fetchGrupos from "../../services/useCarregarGrupos";
 import fetchDispositivos from "../../services/useCarregarDispositivos";
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import pegandoRegistros from "../../services/useCarregarListaDeSites";
-import { AdvancedCheckbox, CheckboxGroup } from 'react-native-advanced-checkbox';
+import { addDomainBlocklist } from "../../services/requests";
 
 export default function Bloquear(){
     
@@ -15,15 +16,15 @@ export default function Bloquear(){
     const [macAddress, setMacAddress] = useState("");
     const [grupoSelecionado, setGruposSelecionados] = useState("");
     const [registros, setRegistros] = useState<Registro[]>([]);
-    const [selectedValues, setSelectedValues] = useState<string[]>([]);
-    
+    const [selectedValues, setSelectedValues] = useState("");
+
     fetchGrupos(setGrupos, setGruposSelecionados);
     
     useEffect(() => {
         fetchDispositivos(grupoSelecionado, setMacAddress, setDispositivos);
     }, [grupoSelecionado])
         
-    useEffect(() => {
+   useEffect(() => {
       if(!macAddress) return;
     
       const interval = setInterval(() => {
@@ -38,23 +39,43 @@ export default function Bloquear(){
     useEffect(() => {
       console.error("Valores selecionados:", selectedValues);
   }, [selectedValues]);
+  
+    const pegandoValores = (domain: string, isChecked: boolean) => {
+      /** if(isChecked){
+        selectedValues.push(domain)
+        setSelectedValues(selectedValues)
+      }else{
+        const values = selectedValues.filter((x) => x !== domain)
+        setSelectedValues(values)
+      }
+      */
+
+      setSelectedValues(domain)
+    }
 
     const renderItem = ({ item }: { item: Registro }) => (
       <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', flexDirection: 'row'}}>
-          <CheckboxGroup onValueChange={setSelectedValues}>
-            <AdvancedCheckbox 
-              value={item.domain}
-              checkedColor="#2F4156" 
-              label={item.domain} 
-              labelStyle = {{fontWeight: 'bold', fontSize: 20}}
-              checkBoxStyle={{ borderRadius: 8 }}
-              size={20}
-
-            />
-          </CheckboxGroup>
+          <BouncyCheckbox
+            size={22}
+            fillColor="#2F4156"
+            unFillColor="#FFFFFF"
+            text={item.domain}
+            innerIconStyle={{ borderWidth: 2 }}
+            onPress={(isChecked: boolean) => pegandoValores (item.domain, isChecked)}
+            isChecked={selectedValues === item.domain}
+          />
+          <Text style={{fontWeight: 'bold', fontSize: 18}}>
+            {item.domain}
+          </Text>
       </View>
-      
     );
+
+    const bloquearSites = async () => {
+      console.error(selectedValues)
+      const response = await addDomainBlocklist(selectedValues, grupoSelecionado)
+
+      if(response) Alert.alert(`Site ${selectedValues} bloqueado com sucesso!!`)
+    }
     
     return(
       <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
@@ -89,15 +110,13 @@ export default function Bloquear(){
                     <FlatList 
                       data={registros} 
                       renderItem={renderItem}
-                      extraData={selectedValues} 
-
                       ListEmptyComponent={<Text style={{fontSize: 20, alignSelf: "center"}}> Selecione um grupo e um dispositivo </Text>}              
                     />
                 </SafeAreaView>
     
                 <TouchableOpacity 
                     style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156'}]} 
-                    onPress={() => Alert.alert("Bloqueados!!")}
+                    onPress={() => bloquearSites()}
                 >
                     <Text style={styles.btnTexto}>
                         Bloquear
