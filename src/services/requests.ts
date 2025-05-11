@@ -13,7 +13,6 @@ export const getRegistro = async function (domain_name: string): Promise<Registr
     }
 
     try{
-        console.error("estou no try")
         const response = await fetch(`http://192.168.0.21:8000/get_registro`, { 
             method: 'POST',
             headers: {
@@ -22,14 +21,12 @@ export const getRegistro = async function (domain_name: string): Promise<Registr
             body: JSON.stringify(dominioParaRegistro)
         });
 
-        console.error(response.ok)
-
-
         if(response.status !== 200) throw new Error("Erro ao tentar pegar os dados!!");
         
         console.error(response)
         return response.json();
     }catch(error){
+        console.error("catch query!!")
         throw new Error("Erro ao tentar pegar os dados!!");
     }
     
@@ -52,7 +49,6 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
     }
 
     try{
-        console.error("estou no try")
         const response = await fetch('http://192.168.0.21:8000/add_domain_blocklist', { 
             method: 'POST',
             headers: {
@@ -114,6 +110,7 @@ export const addClient = async function(address: string, group: string) {
 
         return response.json();
     }catch(error){
+        console.error("catch!!")
         throw new Error("Erro ao tentar enviar um cliente!!");
     }
     
@@ -123,15 +120,16 @@ export const addClient = async function(address: string, group: string) {
                             (Recebe: client_address)
 */
 
-export const deleteClient = async function(client_address: string) {
+export const deleteClient = async function(client_address: string, group_name: string) {
 
     const deletaCliente = {
-        "client-address": client_address
+        "client_address": client_address,
+        "group_name": group_name
     }
 
     try{
         const response = await fetch(`http://192.168.0.21:8000/delete_client`, { 
-            method: 'DELETE',
+            method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
@@ -147,15 +145,16 @@ export const deleteClient = async function(client_address: string) {
     
 }
 
-export const deleteGroup = async function(grupo: string) {
+export const deleteGroup = async function(grupo: string, macAddress: string[]) {
 
     const deletaGrupo = {
-        "group_name": grupo
+        "group_name": grupo,
+        "mac_address": macAddress
     }
 
     try{
         const response = await fetch(`http://192.168.0.21:8000/delete_group`, { 
-            method: 'DELETE',
+            method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },

@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Dispositivo, Registro } from "../../utils/types";
 import RNPickerSelect from 'react-native-picker-select';
 import fetchGrupos from "../../services/useCarregarGrupos";
-import fetchDispositivos from "../../services/useCarregarDispositivos";
+import fetchDispositivos from "../../services/useCarregarDispositivosMacAddress";
 import pegandoRegistros from "../../services/useCarregarListaDeSites";
 
 export default function TelaPrincipal(){

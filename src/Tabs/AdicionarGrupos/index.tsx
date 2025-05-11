@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
 import { carregarGrupos } from "../../services/salvarDispositivos";
+import getGruposQtdDispositivos from "../../services/useCarregarGruposEQtd";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
@@ -12,26 +13,10 @@ export default function AdicionarGrupos(){
 
     const navigation = useNavigation<NavigationProps>();
 
-    const [dispositivos, setDispositivos] = useState<[string, number][]>([]);
+    const [grupos, setGrupos] = useState<[string, number][]>([]);
 
     //roda toda vez que entrar na tela
-    useEffect(() => {
-        async function fetchDispositivos() {
-          try {
-            const dispositivosSalvos = await carregarGrupos();
-            
-            //transformando em array [nomeGrupo: string, quantidade: number]
-            if(dispositivosSalvos != null) setDispositivos(Array.from(dispositivosSalvos));
-        
-          } catch (error: unknown) {
-            if (error instanceof Error) {
-              Alert.alert("Erro", error.message);
-            }
-          }
-        }
-      
-        fetchDispositivos();
-      }, []);
+    getGruposQtdDispositivos(setGrupos)
 
     const renderItem = ({ item }: { item: [string, number] }) => (
         <TouchableOpacity style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}
@@ -47,7 +32,7 @@ export default function AdicionarGrupos(){
             <View style={{ flex: 1, alignItems: 'center', width: '100%', paddingTop: 20}}>
                 <SafeAreaView style={styles.spaceContainerAddBlock}>
                     <FlatList
-                        data={dispositivos}
+                        data={grupos}
                         renderItem={renderItem}
                         keyExtractor={([nome]) => nome}
                         ListEmptyComponent={<Text>Nenhum dispositivo cadastrado.</Text>}

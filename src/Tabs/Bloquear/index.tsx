@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Alert, FlatList, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import { pickerSelectStylesBloquear, styles } from "../../constants/styles";
 import RNPickerSelect from 'react-native-picker-select';
 import { Dispositivo, Registro } from "../../utils/types";
 import fetchGrupos from "../../services/useCarregarGrupos";
-import fetchDispositivos from "../../services/useCarregarDispositivos";
+import fetchDispositivos from "../../services/useCarregarDispositivosMacAddress";
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import pegandoRegistros from "../../services/useCarregarListaDeSites";
 import { addDomainBlocklist } from "../../services/requests";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Bloquear(){
     
@@ -23,23 +24,28 @@ export default function Bloquear(){
     useEffect(() => {
         fetchDispositivos(grupoSelecionado, setMacAddress, setDispositivos);
     }, [grupoSelecionado])
-
-    //rodar na primeiraVez
-    useEffect(() => {
-      if(!macAddress) return;
-      pegandoRegistros(setRegistros, macAddress)
-    }, [macAddress, grupoSelecionado])
         
     //rodar daqui 4 min
-    useEffect(() => {
-      if(!macAddress ||  grupos.size === 0) return;
-    
-      const interval = setInterval(() => {
-        pegandoRegistros(setRegistros, macAddress)
-      }, 120000)
-    
-      return () => clearInterval(interval)
-    }, [macAddress, grupoSelecionado])
+    useFocusEffect(
+      useCallback(() => {
+          if(!macAddress ||  grupos.size === 0) return;
+        
+          pegandoRegistros(setRegistros, macAddress)
+
+          const interval = setInterval(() => {
+            pegandoRegistros(setRegistros, macAddress)
+          }, 120000)
+        
+          return () => {
+            clearInterval(interval)
+            setMacAddress('')
+            setGruposSelecionados('')
+            setRegistros([])
+            setSelectedValues('')
+          }
+        }, [macAddress, grupoSelecionado])
+    )
+     
   
     const pegandoValores = (domain: string) => {
       setSelectedValues(domain)

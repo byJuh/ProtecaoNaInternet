@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { pickerSelectStyles, styles } from "../../constants/styles";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Dispositivo, GruposDispositivos, RootStackParamList } from "../../utils/types";
+import { GruposDispositivos, RootStackParamList } from "../../utils/types";
 import RNPickerSelect from 'react-native-picker-select';
 import { carregarDispositivos, carregarGrupos } from "../../services/salvarDispositivos";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { RouteProp, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { deleteGroup } from "../../services/requests";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
@@ -23,8 +23,9 @@ export default function ExcluirGrupo(){
         try {
             const gruposSalvos = await carregarGrupos();
               
-            if(gruposSalvos != null) setGrupos(gruposSalvos);
-          
+            if(gruposSalvos != null) {
+              setGrupos(gruposSalvos);
+            }
         } catch (error: unknown) {
             if (error instanceof Error) {
               Alert.alert("Erro", error.message);
@@ -42,10 +43,16 @@ export default function ExcluirGrupo(){
     [
     {text: 'Sim', onPress: async() => {
     try{ 
-      const response = await deleteGroup(grupo)
+      const dispositivosSalvos = await carregarDispositivos(grupo)
 
-      if(response){
+      if(dispositivosSalvos) {
+        const dispositivoMac = dispositivosSalvos.map(d => d.mac)
+
+        const response = await deleteGroup(grupo, dispositivoMac)
+
+        if(response){
           const gruposSalvos = await AsyncStorage.getItem('gruposDispositivos');
+          console.error(gruposSalvos)
 
           let grupos: GruposDispositivos = {};
           if (gruposSalvos) {
@@ -56,10 +63,12 @@ export default function ExcluirGrupo(){
                 grupos = {};
               }
             } catch (error) {
-              throw new Error("Erro ao salvar dispostivo");
+              throw new Error("Erro ao pegar dispositivos");
             }
           }
+
           delete grupos[grupo]
+          console.error(grupos)
           await AsyncStorage.setItem('gruposDispositivos', JSON.stringify(grupos))
                       
           var mensagem = "Grupo: " + grupo + " foi removido!"
@@ -74,9 +83,11 @@ export default function ExcluirGrupo(){
               }}
             ]
           )
+      }
        
       }
     }catch(error){
+      console.error(error)
       Alert.alert("Não foi possível remover!!")
     }
   }},

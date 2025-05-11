@@ -4,7 +4,7 @@ import { styles } from "../../constants/styles";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
-import { salvarDispositivos } from "../../services/salvarDispositivos";
+import { carregarDispositivos, salvarDispositivos } from "../../services/salvarDispositivos";
 import { addClient } from "../../services/requests";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
@@ -18,10 +18,7 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
   const [macAddress, setMacAddress] = useState("");
   const [nomeDispositivo, setNomeDispositivo] = useState("");
 
-   //fazer um set com formato FF:FF:FF:FF:FF:FF
-  const onChangeMacAddressHandler = async (macAddress: string) => {
-    setMacAddress(macAddress);
-  }
+  const onChangeMacAddressHandler = async (macAddress: string) => setMacAddress(macAddress);
 
   const onChangeNomeDispositivoHandler = async (nomeDispositivo: string) => setNomeDispositivo(nomeDispositivo);
 
@@ -64,6 +61,20 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
     } else macAddressFormatted = macAddress.toUpperCase()
 
     try{
+      const dispositivos = await carregarDispositivos(nomeGrupo)
+      
+      if(dispositivos && dispositivos.find(d => d.mac == macAddress)){
+        Alert.alert("Erro", "Esse dispositivo já está no grupo!!",
+          [
+            {text: 'Ok', onPress: () => {
+              setMacAddress("");
+              setNomeDispositivo("");
+        
+             navigation.navigate('Tabs', { screen: 'AdicionarGrupos' });
+            }}
+          ]
+        )
+      }
       const response = await addClient(macAddressFormatted, nomeGrupo)
       
       if(response){

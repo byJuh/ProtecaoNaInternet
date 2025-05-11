@@ -4,8 +4,8 @@ import { styles } from "../../constants/styles";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
-import { carregarDispositivos } from "../../services/salvarDispositivos";
 import { Dispositivo } from "../../utils/types";
+import getDispositivos from "../../services/useCarregarDispositivos";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 type RouteProps = RouteProp<RootStackParamList, 'Adicionar_Dispositivo'>;
@@ -18,29 +18,14 @@ export default function AdicionarDispositivos({ route } : {route: RouteProps}){
     const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);
 
     //roda toda vez que entrar na tela
-    useEffect(() => {
-        async function fetchDispositivos() {
-          try {
-            const dispositivosSalvos = await carregarDispositivos(nomeGrupo);
-            
-            if(dispositivosSalvos != null) setDispositivos(dispositivosSalvos);
-        
-          } catch (error: unknown) {
-            if (error instanceof Error) {
-              Alert.alert("Erro", error.message);
-            }
-          }
-        }
-      
-        fetchDispositivos();
-      }, []);
+    getDispositivos(nomeGrupo, setDispositivos)
 
-      const renderItem = ({ item }: { item: Dispositivo }) => (
+    const renderItem = ({ item }: { item: Dispositivo }) => (
         <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
             <Text style={{ fontWeight: 'bold', fontSize: 22}}>{item.nome}</Text>
             <Text style={{ fontSize: 20}}>{'\t'}{item.mac}</Text>
         </View>
-      );
+    );
 
     return(
         <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
@@ -57,7 +42,7 @@ export default function AdicionarDispositivos({ route } : {route: RouteProps}){
                 <View style={{flexDirection: 'row', height: '100%'}}>
                     <TouchableOpacity 
                         style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156'}]} 
-                        onPress={() => navigation.navigate('Cadastrar_Mac', {nomeGrupo: ''})}
+                        onPress={() => navigation.navigate('Cadastrar_Mac', {nomeGrupo})}
                     >
                         <Text style={styles.btnTexto}>
                             Novo MAC
