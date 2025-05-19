@@ -38,10 +38,10 @@ export default function Bloquear(){
         
           return () => {
             clearInterval(interval)
-            setMacAddress('')
-            setGruposSelecionados('')
+            setMacAddress("")
+            setGruposSelecionados("")
             setRegistros([])
-            setSelectedValues('')
+            setSelectedValues("")
           }
         }, [macAddress, grupoSelecionado])
     )
@@ -72,13 +72,19 @@ export default function Bloquear(){
       console.error(selectedValues)
       const response = await addDomainBlocklist(selectedValues, grupoSelecionado)
 
+      console.error(response)
       if(response) Alert.alert(`Site ${selectedValues} bloqueado com sucesso!!`)
+    }
+
+    const excluirSites = async () => {
+      //Passar para uma tela de selecionar um grupo e um dos dominios!!
     }
     
     return(
       <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
         <View style = {[styles.select, {marginTop: 15, width: '50%', borderWidth: 2, borderColor: '#567C8D'}]}>
           <RNPickerSelect 
+            touchableWrapperProps={{testID: 'picker-grupos'}}
             placeholder={{ label: 'Grupos', value: null }}
             items={Array.from(grupos.keys()).map(nomeGrupo => ({
               label: nomeGrupo,
@@ -92,10 +98,11 @@ export default function Bloquear(){
         {grupos && grupoSelecionado && (
           <View style = {[styles.select, {marginTop: 15, width: '50%', borderWidth: 2, borderColor: '#567C8D'}]}>
             <RNPickerSelect 
+              touchableWrapperProps={{testID: 'picker-dispositivos'}}
               placeholder={{ label: 'Dispositivos', value: null }}
               items={dispositivos.map(d => ({
                 label: `${d.nome} (${d.mac})`, 
-                value: d.mac
+                value: d.mac 
               }))}
               onValueChange={(value) => setMacAddress(value)} 
               value={macAddress}
@@ -111,15 +118,27 @@ export default function Bloquear(){
                       ListEmptyComponent={<Text style={{fontSize: 20, alignSelf: "center"}}> Selecione um grupo e um dispositivo </Text>}              
                     />
                 </SafeAreaView>
-    
-                <TouchableOpacity 
-                    style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156'}]} 
-                    onPress={() => bloquearSites()}
-                >
-                    <Text style={styles.btnTexto}>
-                        Bloquear
-                    </Text>
-                </TouchableOpacity>
+
+                <View style={{flexDirection: 'row', height: '100%'}}>
+                  <TouchableOpacity 
+                      style={[styles.btn, {marginTop: '5%', backgroundColor: '#2F4156', height: '10%'}]} 
+                      onPress={() => bloquearSites()}
+                  >
+                      <Text style={styles.btnTexto}>
+                          Bloquear
+                      </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity 
+                      style={[styles.btn, {marginTop: '5%', backgroundColor: '#2F4156', marginLeft: 10, height: '10%'}]} 
+                      onPress={() => excluirSites()}
+                  >
+                      <Text style={styles.btnTexto}>
+                          Excluir bloqueio
+                      </Text>
+                  </TouchableOpacity>
+                </View>
+                
             </View>
         </SafeAreaView>
     

@@ -27,6 +27,7 @@ export const getRegistro = async function (domain_name: string): Promise<Registr
         return response.json();
     }catch(error){
         console.error("catch query!!")
+        console.error(error)
         throw new Error("Erro ao tentar pegar os dados!!");
     }
     
@@ -111,6 +112,7 @@ export const addClient = async function(address: string, group: string) {
         return response.json();
     }catch(error){
         console.error("catch!!")
+        console.error(error)
         throw new Error("Erro ao tentar enviar um cliente!!");
     }
     

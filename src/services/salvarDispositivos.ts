@@ -8,19 +8,12 @@ export async function salvarDispositivos(nomeDispositivo: string, macAddressForm
         
         //verifica se tem algo, se tiver transforma em objeto, caso nao transforma em array vazio
         let grupos: GruposDispositivos = {};
-        if (gruposSalvos) {
-            try {
-                grupos = JSON.parse(gruposSalvos);
-                
-                if (Array.isArray(grupos)) {
-                    grupos = {};
-                }
-            } catch (error) {
-                throw new Error("Erro ao salvar dispostivo");
-            }
+        try{
+            grupos = gruposSalvos ? JSON.parse(gruposSalvos) : {};
+        }catch(error){
+            throw new Error("Erro ao salvar dispositivo");
         }
 
-        //verifica se realmente eh um array
         if(!grupos[nomeGrupo]) {
             grupos[nomeGrupo] = {
                 quantidade: 0,
