@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { pickerSelectStyles, styles } from "../../constants/styles";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { GruposDispositivos, RootStackParamList } from "../../utils/types";
+import { RootStackParamList } from "../../utils/types";
 import RNPickerSelect from 'react-native-picker-select';
-import { carregarDispositivos, carregarGrupos } from "../../services/salvarDispositivos";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { carregarDispositivos, carregarGrupos, deletarGrupo } from "../../services/salvarDispostivos";
 import { useNavigation } from "@react-navigation/native";
 import { deleteGroup } from "../../services/requests";
 
@@ -21,7 +20,7 @@ export default function ExcluirGrupo(){
   useEffect(() => {
       async function fetchGrupos() {
         try {
-            const gruposSalvos = await carregarGrupos();
+            const gruposSalvos =  carregarGrupos();
               
             if(gruposSalvos != null) {
               setGrupos(gruposSalvos);
@@ -43,7 +42,7 @@ export default function ExcluirGrupo(){
     [
     {text: 'Sim', onPress: async() => {
     try{ 
-      const dispositivosSalvos = await carregarDispositivos(grupo)
+      const dispositivosSalvos = carregarDispositivos(grupo)
 
       if(dispositivosSalvos) {
         const dispositivoMac = dispositivosSalvos.map(d => d.mac)
@@ -51,35 +50,14 @@ export default function ExcluirGrupo(){
         const response = await deleteGroup(grupo, dispositivoMac)
 
         if(response){
-          const gruposSalvos = await AsyncStorage.getItem('gruposDispositivos');
-          console.error(gruposSalvos)
-
-          let grupos: GruposDispositivos = {};
-          if (gruposSalvos) {
-            try {
-              grupos = JSON.parse(gruposSalvos);
-                                          
-              if (Array.isArray(grupos)) {
-                grupos = {};
-              }
-            } catch (error) {
-              throw new Error("Erro ao pegar dispositivos");
-            }
-          }
-
-          delete grupos[grupo]
-          console.error(grupos)
-          await AsyncStorage.setItem('gruposDispositivos', JSON.stringify(grupos))
-                      
+          deletarGrupo(grupo)
           var mensagem = "Grupo: " + grupo + " foi removido!"
           Alert.alert("Removido", 
             mensagem,
             [
               {text: 'Ok', onPress: async () => {
-                if(!grupos[grupo]){
                   setGrupo('');
-                  navigation.navigate('Tabs', { screen: 'Principal' });
-                }
+                  navigation.replace('Tabs', { screen: 'Bloquear' });
               }}
             ]
           )
@@ -91,7 +69,7 @@ export default function ExcluirGrupo(){
       Alert.alert("Não foi possível remover!!")
     }
   }},
-  {text: 'Não', onPress: () => navigation.navigate('Tabs', {screen: 'AdicionarGrupos'})}], {cancelable:false})
+  {text: 'Não', onPress: () => navigation.replace('Tabs', {screen: 'AdicionarGrupos'})}], {cancelable:false})
       
 }
 

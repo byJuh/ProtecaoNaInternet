@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
 import { Dispositivo } from "../utils/types";
 import { Alert } from "react-native";
-import { carregarDispositivos } from "./salvarDispositivos";
+import { carregarDispositivos } from "./salvarDispostivos";
 
-export default async function getDispositivos(nomeGrupo: string, setDispositivos: Dispatch<SetStateAction<Dispositivo[]>>) {
+export default function getDispositivos(nomeGrupo: string, setDispositivos: Dispatch<SetStateAction<Dispositivo[]>>) {
     try {
-        const dispositivosSalvos = await carregarDispositivos(nomeGrupo);
+        const dispositivosSalvos = carregarDispositivos(nomeGrupo);
                 
         if(dispositivosSalvos != null) setDispositivos(dispositivosSalvos);
             

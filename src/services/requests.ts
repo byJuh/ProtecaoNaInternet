@@ -1,19 +1,18 @@
+import { Alert } from "react-native";
+import {Registro} from "../utils/types";
+
 /**GET /get_registro - Retorna registros de consultas para um domínio específico
                        (Recebe: domain-name, length)
 */
 
-import { Registro } from "../utils/types";
-
-//passar por JSON
-export const getRegistro = async function (domain_name: string): Promise<Registro[]> {
-
+export const getRegistro = async function (macAddress: string): Promise<Registro[]> {
     const dominioParaRegistro = {
-        "domain-name": domain_name,
+        "domain-name": macAddress,
         "length": '30'
     }
 
     try{
-        const response = await fetch(`http://192.168.0.21:8000/get_registro`, { 
+        const response = await fetch("http://192.168.0.21:8000/get_registro", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -21,16 +20,28 @@ export const getRegistro = async function (domain_name: string): Promise<Registr
             body: JSON.stringify(dominioParaRegistro)
         });
 
-        if(response.status !== 200) throw new Error("Erro ao tentar pegar os dados!!");
-        
-        console.error(response)
-        return response.json();
+        if(response.ok){
+            const resposta = await response.json()
+
+            if(Array.isArray(resposta)) {
+                if(resposta.length > 0){
+                    //devolveu os dominios
+                    console.error(resposta)
+                    return resposta
+                }else{
+                    Alert.alert("Nenhum domínio encontrado")
+                    return []
+                }
+            } else {
+                Alert.alert("Erro", "Verifique o DNS no celular ou a internet")
+                return []
+            }
+        } else {
+            throw new Error("Erro ao tentar pegar os sites!!");
+        }
     }catch(error){
-        console.error("catch query!!")
-        console.error(error)
-        throw new Error("Erro ao tentar pegar os dados!!");
+        throw new Error("Erro de rede: " + error);
     }
-    
 }
 
 /**POST /add_domain_blocklist - Adiciona um domínio à lista de bloqueios de um grupo
@@ -49,23 +60,33 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
         "group-name": group
     }
 
-    try{
-        const response = await fetch('http://192.168.0.21:8000/add_domain_blocklist', { 
+    try {
+        const response = await fetch("http://192.168.0.21:8000/add_domain_blocklist", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(dominioParaBloquear)
         });
-
-        if(response.status !== 200) throw new Error("Erro ao tentar enviar os dados!!");
-
-        return response.json();
-
-    }catch(error){
-        throw new Error("Erro ao tentar enviar os dados!!");
-    }
     
+        if(response.ok){
+            const resposta = await response.json()
+
+            if(resposta){
+                if(resposta['status'] === 'ok'){
+                    return resposta['message']
+                } else {
+                    Alert.alert('Erro', resposta['Error'])
+                }
+            } else {
+                throw new Error("Erro ao tentar bloquear site!!");
+            }
+        } else {
+            throw new Error("Erro ao tentar bloquear site!!");
+        }
+    } catch (error) {
+        throw new Error("Erro de rede: " + error);
+    }
 }
 
 export const createGroup = async function(group: string) {
@@ -73,8 +94,8 @@ export const createGroup = async function(group: string) {
         'group-name': group
     }
 
-    try{
-        const response = await fetch('http://192.168.0.21:8000/create_group', { 
+    try {
+        const response = await fetch("http://192.168.0.21:8000/create_group", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -82,24 +103,36 @@ export const createGroup = async function(group: string) {
             body: JSON.stringify(novoGrupo)
         });
 
-        if(response.status !== 200) throw new Error("Erro ao tentar enviar o nome do grupo!!");
+        if(response.ok){
+            const resposta = await response.json()
 
-        return response.json();
-    }catch(error){
-        throw new Error("Erro ao tentar enviar o nome do grupo!!");
+            if(resposta){
+                if(resposta['status'] === 'ok'){
+                    return resposta['message']
+                }else if(resposta['status'] === 'erro'){
+                    Alert.alert('Erro', resposta['Error'])
+                }else {
+                    Alert.alert('Erro', resposta['Exist'])
+                }
+            } else {
+                throw new Error("Erro ao criar grupo!!");
+            }
+        } else {
+            throw new Error("Erro ao criar grupo!!");
+        }
+    } catch(error) {
+        throw new Error("Erro de rede: " + error);
     }
-    
 }
 
 export const addClient = async function(address: string, group: string) {
-
     const novoCliente = {
         'client_address': address,
         'group_name': group
     }
 
     try{
-        const response = await fetch('http://192.168.0.21:8000/add_client', { 
+        const response = await fetch("http://192.168.0.21:8000/add_client", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -107,30 +140,42 @@ export const addClient = async function(address: string, group: string) {
             body: JSON.stringify(novoCliente)
         });
 
-        if(response.status !== 200) throw new Error("Erro ao tentar enviar um cliente!!");
+        if(response.ok){
+            const resposta = await response.json()
 
-        return response.json();
+            if(resposta){
+                if(resposta['status'] === 'ok'){
+                    return resposta['message']
+                }else{
+                    Alert.alert('Erro', resposta['Error'])
+                }
+            } else {
+                throw new Error("Erro ao criar grupo!!");
+            }
+        } else {
+            throw new Error("Erro ao criar grupo!!");
+        }
     }catch(error){
-        console.error("catch!!")
-        console.error(error)
-        throw new Error("Erro ao tentar enviar um cliente!!");
+        console.error(JSON.stringify(error));
+        throw new Error("Erro de rede: " + error);
     }
-    
 }
 
 /** DELETE /delete_client - Remove um cliente
                             (Recebe: client_address)
+    
+    DELETE /delete_group - Remove um grupo
+                           (Recebe: client_address, group_name)
 */
 
 export const deleteClient = async function(client_address: string, group_name: string) {
-
     const deletaCliente = {
         "client_address": client_address,
         "group_name": group_name
     }
 
     try{
-        const response = await fetch(`http://192.168.0.21:8000/delete_client`, { 
+        const response = await fetch("http://192.168.0.21:8000/delete_client", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -138,24 +183,34 @@ export const deleteClient = async function(client_address: string, group_name: s
             body: JSON.stringify(deletaCliente)
         });
 
-        if(response.status !== 200) throw new Error("Erro ao tentar excluir um cliente!!");
+        if(response.ok){
+            const resposta = await response.json()
 
-        return response.json();
-    }catch(error){
-        throw new Error("Erro ao tentar excluir um cliente!!");
+            if(resposta){
+                if(resposta['status'] === 'ok'){
+                    return resposta['message']
+                } else {
+                    Alert.alert('Erro', resposta['Error'])
+                }
+            } else {
+                throw new Error("Erro ao criar grupo!!");
+            }
+        } else {
+            throw new Error("Erro ao criar grupo!!");
+        }
+    } catch(error){
+        throw new Error("Erro de rede: " + error);
     }
-    
 }
 
 export const deleteGroup = async function(grupo: string, macAddress: string[]) {
-
     const deletaGrupo = {
         "group_name": grupo,
-        "mac_address": macAddress
+        "macAddress": macAddress
     }
 
     try{
-        const response = await fetch(`http://192.168.0.21:8000/delete_group`, { 
+        const response = await fetch("http://192.168.0.21:8000/delete_group", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -163,11 +218,23 @@ export const deleteGroup = async function(grupo: string, macAddress: string[]) {
             body: JSON.stringify(deletaGrupo)
         });
 
-        if(response.status !== 200) throw new Error("Erro ao tentar excluir um grupo!!");
+        if(response.ok){
+            const resposta = await response.json()
 
-        return response.json();
-    }catch(error){
-        throw new Error("Erro ao tentar excluir um grupo!!");
+            if(resposta) {
+                if(resposta['status'] === 'ok'){
+                    return resposta['message']
+                }else{
+                    Alert.alert('Erro', resposta['Error'])
+                    console.error('erro')
+                }
+            } else {
+                throw new Error("Erro ao deletar grupo!!");
+            }
+        } else {
+            throw new Error("Erro ao deletar grupo!!");
+        }
+    } catch(error) {
+        throw new Error("Erro de rede: " + error);
     }
-    
 }

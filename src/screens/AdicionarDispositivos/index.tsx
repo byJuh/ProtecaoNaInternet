@@ -18,7 +18,10 @@ export default function AdicionarDispositivos({ route } : {route: RouteProps}){
     const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);
 
     //roda toda vez que entrar na tela
-    getDispositivos(nomeGrupo, setDispositivos)
+    useEffect(() => {
+        getDispositivos(nomeGrupo, setDispositivos)
+    }, [])
+    
 
     const renderItem = ({ item }: { item: Dispositivo }) => (
         <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
@@ -42,7 +45,7 @@ export default function AdicionarDispositivos({ route } : {route: RouteProps}){
                 <View style={{flexDirection: 'row', height: '100%'}}>
                     <TouchableOpacity 
                         style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156'}]} 
-                        onPress={() => navigation.navigate('Cadastrar_Mac', {nomeGrupo})}
+                        onPress={() => navigation.replace('Cadastrar_Mac', {nomeGrupo})}
                     >
                         <Text style={styles.btnTexto}>
                             Novo MAC
@@ -51,7 +54,7 @@ export default function AdicionarDispositivos({ route } : {route: RouteProps}){
 
                     <TouchableOpacity 
                         style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156', marginLeft: 10}]} 
-                        onPress={() => navigation.navigate('Excluir_Mac', {nomeGrupo})}
+                        onPress={() => navigation.replace('Excluir_Mac', {nomeGrupo})}
                     >
                         <Text style={styles.btnTexto}>
                             Excluir Mac

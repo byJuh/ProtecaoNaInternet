@@ -1,6 +1,6 @@
 import React from "react";
 import { fireEvent, render, waitFor, screen } from "@testing-library/react-native";
-import { salvarDispositivos, carregarDispositivos, carregarGrupos } from "../salvarDispositivos";
+import { salvarDispositivos, carregarDispositivos, carregarGrupos } from "../salvarDispositivos_antigo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 jest.mock('@react-native-async-storage/async-storage', () => ({

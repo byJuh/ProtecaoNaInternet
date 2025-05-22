@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Alert, FlatList, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "../../constants/styles";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
-import { carregarGrupos } from "../../services/salvarDispositivos";
 import getGruposQtdDispositivos from "../../services/useCarregarGruposEQtd";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
@@ -16,7 +15,10 @@ export default function AdicionarGrupos(){
     const [grupos, setGrupos] = useState<[string, number][]>([]);
 
     //roda toda vez que entrar na tela
-    getGruposQtdDispositivos(setGrupos)
+    useEffect(() => {
+        getGruposQtdDispositivos(setGrupos)
+    }, [])
+    
 
     const renderItem = ({ item }: { item: [string, number] }) => (
         <TouchableOpacity style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}
@@ -42,7 +44,7 @@ export default function AdicionarGrupos(){
                 <View style={{flexDirection: 'row', height: '100%'}}>
                     <TouchableOpacity 
                         style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156'}]} 
-                        onPress={() => navigation.navigate('Cadastrar_Grupo')}
+                        onPress={() => navigation.replace('Cadastrar_Grupo')}
                     >
                         <Text style={styles.btnTexto}>
                             Novo Grupo
@@ -51,7 +53,7 @@ export default function AdicionarGrupos(){
 
                     <TouchableOpacity 
                         style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156', marginLeft: 10}]} 
-                        onPress={() => navigation.navigate('Excluir_Grupo')}
+                        onPress={() => navigation.replace('Excluir_Grupo')}
                     >
                         <Text style={styles.btnTexto}>
                             Excluir Grupo

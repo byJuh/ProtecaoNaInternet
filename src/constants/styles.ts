@@ -128,6 +128,7 @@ export const pickerSelectStyles: PickerStyle = {
         width: '100%',
         paddingVertical: 10,
         fontSize: 15,
+        color: '#9DB2BF',
     },
     placeholder: {
         color: '#9DB2BF',           
@@ -142,6 +143,7 @@ export const pickerSelectStylesBloquear: PickerStyle = {
         width: '100%',
         paddingVertical: 2,
         fontSize: 15,
+        
     },
     placeholder: {
         color: '#F5EFEB',           

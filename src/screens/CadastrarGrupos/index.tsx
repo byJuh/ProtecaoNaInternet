@@ -5,7 +5,7 @@ import { styles } from "../../constants/styles";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
 import { useNavigation } from "@react-navigation/native";
-import { carregarGrupos } from "../../services/salvarDispositivos";
+import { carregarGrupos } from "../../services/salvarDispostivos";
 import { createGroup } from "../../services/requests";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Cadastrar_Mac'>;
@@ -18,14 +18,15 @@ export default function CadastrarGrupos(){
     
     const criarGrupo = async () => {
         if(nomeGrupo != '') {
-            const grupo = await carregarGrupos()
+            const grupo = carregarGrupos()
 
             if(grupo && !grupo.has(nomeGrupo)) {
                 const response = await createGroup(nomeGrupo)
 
                 if(response){
+                    console.error(response)
                     Alert.alert(response)
-                    navigation.navigate('Cadastrar_Mac', {nomeGrupo: nomeGrupo})
+                    navigation.replace('Cadastrar_Mac', {nomeGrupo: nomeGrupo})
                 }
                 
             }else{
@@ -42,7 +43,7 @@ export default function CadastrarGrupos(){
     return(
         <View style={[styles.container, {backgroundColor: '#C8D9E6'}]}>
             <TextInput
-                style={[styles.input, {marginBottom: 15}]}
+                style={[styles.input, {marginBottom: 15,  color:'#9DB2BF'}]}
                 placeholder={'Nome do Grupo'}
                 placeholderTextColor={'#9DB2BF'}
                 value={nomeGrupo}

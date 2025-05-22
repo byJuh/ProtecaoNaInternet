@@ -1,13 +1,13 @@
 import { Dispatch, SetStateAction } from "react";
-import { carregarDispositivos } from "./salvarDispositivos";
+import { carregarDispositivos } from "./salvarDispostivos";
 import { Dispositivo } from "../utils/types";
 import { Alert } from "react-native";
 
 
-export default async function fetchDispositivos(grupoSelecionado: string, setMacAddress: Dispatch<SetStateAction<string>>, setDispositivos: Dispatch<SetStateAction<Dispositivo[]>>) {
+export default function fetchDispositivos(grupoSelecionado: string, setMacAddress: Dispatch<SetStateAction<string>>, setDispositivos: Dispatch<SetStateAction<Dispositivo[]>>) {
     try{
         if(grupoSelecionado != null) {
-            const dispositivosSalvos = await carregarDispositivos(grupoSelecionado);
+            const dispositivosSalvos = carregarDispositivos(grupoSelecionado);
                     
             if(dispositivosSalvos != null) { 
               if(dispositivosSalvos.length == 1) setMacAddress(dispositivosSalvos[0].mac)

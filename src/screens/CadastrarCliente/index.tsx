@@ -4,8 +4,9 @@ import { styles } from "../../constants/styles";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
-import { carregarDispositivos, salvarDispositivos } from "../../services/salvarDispositivos";
+import { carregarDispositivos, salvarDispositivos } from "../../services/salvarDispostivos";
 import { addClient } from "../../services/requests";
+import { deletarDispositivo } from "../../services/salvarDispostivos";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 type RouteProps = RouteProp<RootStackParamList, 'Cadastrar_Mac'>;
@@ -23,8 +24,8 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
   const onChangeNomeDispositivoHandler = async (nomeDispositivo: string) => setNomeDispositivo(nomeDispositivo);
 
   //REVER
-  const formatMacAddress = (macAddress: string): string | null => {
-      if (!macAddress || macAddress.trim() === "") {
+  const formatMacAddress = (macAddress: string) => {
+      /*if (!macAddress || macAddress.trim() === "") {
         return null;
       }
 
@@ -35,7 +36,10 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
 
       if(macAddressFormatted.length != 12) return null
       else return macAddressFormatted.match(/.{1,2}/g)?.join(":") ?? '';
-  }
+    */
+      const macAddressFormated = macAddress.toUpperCase().replace(/[^a-fA-F0-9]/g, '').match(/.{1,2}/g)?.join(":") ?? '';
+      setMacAddress(macAddressFormated);
+  } 
 
   const cadastrarMacNome = async () =>{
     if(!macAddress || !nomeDispositivo){
@@ -43,25 +47,16 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
         return;
     }
 
-    let macAddressFormatted = macAddress
-
     //regex para formato MacAddress, verificando se ja esta no formato
     var regex = new RegExp(/^(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2})$/)
 
-    if(!macAddressFormatted.match(regex))  {
-      //caso nao esteja no formato, formatar
-      
-      const formatted = formatMacAddress(macAddress);
-      
-      if (formatted) macAddressFormatted = formatted;
-      else {
+    if(!(macAddress.match(regex)) && !(macAddress.length == 17))  {
         Alert.alert("MAC inválido!");
         return;
-      }
-    } else macAddressFormatted = macAddress.toUpperCase()
+    } 
 
     try{
-      const dispositivos = await carregarDispositivos(nomeGrupo)
+      const dispositivos = carregarDispositivos(nomeGrupo)
       
       if(dispositivos && dispositivos.find(d => d.mac == macAddress)){
         Alert.alert("Erro", "Esse dispositivo já está no grupo!!",
@@ -75,28 +70,29 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
           ]
         )
       }
-      const response = await addClient(macAddressFormatted, nomeGrupo)
+      
+      salvarDispositivos(nomeDispositivo, macAddress, nomeGrupo)
+      const response = await addClient(macAddress, nomeGrupo)
       
       if(response){
-        await salvarDispositivos(nomeDispositivo, macAddressFormatted, nomeGrupo)
-
-        Alert.alert("Sucesso", "Dispositivo salvo no grupo!",
+        Alert.alert("Sucesso", response,
           [
             {text: 'Ok', onPress: () => {
               setMacAddress("");
               setNomeDispositivo("");
         
-              navigation.navigate('Tabs', { screen: 'Principal' });
+              navigation.navigate('Tabs', { screen: 'Bloquear' });
             }}
           ]
         );
-     
+      } else {
+        Alert.alert("Erro", "Erro ao salvar o dispositivo!!");
+        deletarDispositivo(nomeDispositivo, macAddress, nomeGrupo);
       }
-      
-
     }catch (error){
       if(error instanceof Error) {
         Alert.alert("Erro", error.message);
+        deletarDispositivo(nomeDispositivo, macAddress, nomeGrupo);
       }
     }
 
@@ -108,7 +104,7 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
         <ScrollView contentContainerStyle={[styles.container, {backgroundColor: '#C8D9E6'}]} keyboardShouldPersistTaps="handled">
           <TextInput
-              style={styles.input}
+              style={[styles.input, {marginBottom: 15, color:'#9DB2BF'}]}
               placeholder={'Mac Address'}
               placeholderTextColor={'#9DB2BF'}
               value={macAddress}
@@ -116,11 +112,11 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
               keyboardType="visible-password"
               autoCapitalize = {"characters"}
               autoCorrect={false}
-              onChangeText={onChangeMacAddressHandler}  
-                
+              onChangeText={formatMacAddress}  
+              
           />
           <TextInput
-              style={[styles.input, {marginBottom: 15}]}
+              style={[styles.input, {marginBottom: 15, color:'#9DB2BF'}]}
               placeholder={'Nome do Dispositivo'}
               placeholderTextColor={'#9DB2BF'}
               value={nomeDispositivo}

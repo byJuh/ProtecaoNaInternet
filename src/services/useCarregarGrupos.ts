@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
-import { carregarGrupos } from "./salvarDispositivos";
+import { carregarGrupos } from "./salvarDispostivos";
 import { Alert } from "react-native";
 
-export default async function fetchGrupos(setGrupos: Dispatch<Map<string,number>>, setGruposSelecionados: Dispatch<SetStateAction<string>>) {
+export default function fetchGrupos(setGrupos: Dispatch<SetStateAction<Map<string,number>>>, setGruposSelecionados: Dispatch<SetStateAction<string>>) {
       try {
-        const gruposSalvos = await carregarGrupos();
+        const gruposSalvos = carregarGrupos();
 
         if(gruposSalvos != null) {
             setGrupos(gruposSalvos)

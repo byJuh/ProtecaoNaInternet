@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, waitFor, screen } from "@testing-library/react-native";
 import Bloquear from "../Bloquear";
-import { addDomainBlocklist } from "../../services/requests";
+import { addDomainBlocklist } from "../../services/requests_antigo";
 import useCarregarGrupos from "../../services/useCarregarGrupos";
 
 jest.mock('../../services/useCarregarGrupos');

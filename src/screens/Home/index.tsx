@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "../../constants/styles";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../utils/types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { verificarQuantidadeGrupos } from "../../services/salvarDispostivos";
 //para obter o tipo do objeto de navegação
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
@@ -15,9 +14,9 @@ export default function HomeScreen(){
 
   const mudandoTela = async () => {
     try{ 
-      const grupo = await AsyncStorage.getItem('gruposDispositivos')
+      const telaPrincipal = verificarQuantidadeGrupos();
 
-      if(grupo) navigation.navigate('Tabs', {screen: 'Principal'})
+      if(telaPrincipal) navigation.replace('Tabs', {screen: 'Bloquear'})
       else navigation.navigate('Tela_Explicacao')
     
     }catch(error){
@@ -25,6 +24,9 @@ export default function HomeScreen(){
     }
     
   }
+
+  useEffect(() => {
+  })
 
   return(
       <View style={[styles.container, {backgroundColor: '#C8D9E6'}]}>

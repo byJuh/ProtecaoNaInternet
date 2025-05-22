@@ -62,7 +62,6 @@ export async function carregarGrupos(): Promise<Map<string, number>> {
     try{
         const gruposSalvos = await AsyncStorage.getItem('gruposDispositivos')
         
-                 
         var gruposSalvosObject = gruposSalvos ? JSON.parse(gruposSalvos) : {};
 
         var gruposMap = new Map(Object.entries(gruposSalvosObject));

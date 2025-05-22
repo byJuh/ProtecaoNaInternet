@@ -23,7 +23,6 @@ export type GruposDispositivos = {
 
 //definindo os parametros que pode passar (telas)
 export type TabsParamList = {
-    Principal: undefined;
     Bloquear: undefined;
     AdicionarGrupos: undefined;
 };;

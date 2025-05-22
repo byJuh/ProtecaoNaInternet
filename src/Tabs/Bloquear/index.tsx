@@ -19,7 +19,9 @@ export default function Bloquear(){
     const [registros, setRegistros] = useState<Registro[]>([]);
     const [selectedValues, setSelectedValues] = useState("");
     
-    fetchGrupos(setGrupos, setGruposSelecionados);
+    useEffect(() => {
+      fetchGrupos(setGrupos, setGruposSelecionados);
+    }, []) 
     
     useEffect(() => {
         fetchDispositivos(grupoSelecionado, setMacAddress, setDispositivos);
@@ -30,17 +32,17 @@ export default function Bloquear(){
       useCallback(() => {
           if(!macAddress ||  grupos.size === 0) return;
         
-          pegandoRegistros(setRegistros, macAddress)
-
+          pegandoRegistros(setRegistros, macAddress);
+          
           const interval = setInterval(() => {
             pegandoRegistros(setRegistros, macAddress)
           }, 120000)
         
           return () => {
-            clearInterval(interval)
+            clearInterval(interval);
+            setRegistros([])
             setMacAddress("")
             setGruposSelecionados("")
-            setRegistros([])
             setSelectedValues("")
           }
         }, [macAddress, grupoSelecionado])
@@ -72,8 +74,7 @@ export default function Bloquear(){
       console.error(selectedValues)
       const response = await addDomainBlocklist(selectedValues, grupoSelecionado)
 
-      console.error(response)
-      if(response) Alert.alert(`Site ${selectedValues} bloqueado com sucesso!!`)
+      if(response) Alert.alert(response)
     }
 
     const excluirSites = async () => {
