@@ -1,8 +1,6 @@
-import { MMKVLoader } from 'react-native-mmkv-storage';
 import { Dispositivo, Grupo, GruposDispositivos } from "../utils/types";
 import { Alert } from 'react-native';
-
-const MMKV = new MMKVLoader().initialize();
+import { MMKV } from '../utils/inicializarMMKV';
 
 export function salvarDispositivos(nomeDispositivo: string, macAddressFormatted: string, nomeGrupo: string){
     try{
@@ -11,7 +9,7 @@ export function salvarDispositivos(nomeDispositivo: string, macAddressFormatted:
         
         let grupos: GruposDispositivos = gruposSalvos ? JSON.parse(gruposSalvos) : {};
     
-        console.error('Dados antes:', JSON.stringify(grupos, null, 2));
+        //console.error('Dados antes:', JSON.stringify(grupos, null, 2));
         
         //cria um grupo se nn exister
         if(!grupos[nomeGrupo]) {
@@ -35,9 +33,9 @@ export function salvarDispositivos(nomeDispositivo: string, macAddressFormatted:
 
         MMKV.setString('gruposDispositivos', JSON.stringify(grupos));
 
-        const salvou = MMKV.getAllMMKVInstanceIDs();
-        console.error('Dados depois:', MMKV.getString('gruposDispositivos')); // Verificação
-        console.error(salvou); 
+        //const salvou = MMKV.getAllMMKVInstanceIDs();
+        //console.error('Dados depois:', MMKV.getString('gruposDispositivos')); // Verificação
+        //console.error(salvou); 
     }catch (error){
         throw new Error("Erro ao salvar dispostivo");
     }
@@ -112,18 +110,17 @@ export function carregarGrupos(): Map<string, number> {
             
 } 
 
-
 export function deletarGrupo(nomeGrupo: string) {
     try{
        const gruposSalvos = MMKV.getString('gruposDispositivos');
-       console.error(gruposSalvos)
+       //console.error(gruposSalvos)
        const grupos: GruposDispositivos = gruposSalvos ? JSON.parse(gruposSalvos) : {};
 
        if(grupos[nomeGrupo]){
            delete grupos[nomeGrupo]
            
            MMKV.setString('gruposDispositivos', JSON.stringify(grupos))
-           console.error(grupos)
+           //console.error(grupos)
         }
     } catch(error){
         throw new Error("Erro ao deletar grupo.");
@@ -148,7 +145,7 @@ export function verificarQuantidadeGrupos(): boolean {
 export function deletarCliente(nomeGrupo: string, macAddress: string){
     try{
         const gruposSalvos = MMKV.getString('gruposDispositivos');
-        console.error(gruposSalvos)
+        //console.error(gruposSalvos)
 
         const grupos: GruposDispositivos = gruposSalvos ? JSON.parse(gruposSalvos) : {};
             
@@ -163,7 +160,7 @@ export function deletarCliente(nomeGrupo: string, macAddress: string){
             }
         
             MMKV.setString('gruposDispositivos', JSON.stringify(grupos))
-            console.error(grupos)
+            //console.error(grupos)
         }     
     }catch(error){
         throw new Error("Erro ao deletar cliente.");

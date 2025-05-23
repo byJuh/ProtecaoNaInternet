@@ -32,7 +32,6 @@ export default function Excluir_cliente({ route } : {route: RouteProps}){
         const response = await deleteClient(macAddress, nomeGrupo)
 
           if(response){
-
             deletarCliente(nomeGrupo, macAddress);
             var mensagem = "Dispositivo de MAC: " + macAddress + " foi removido!"
             Alert.alert("Removido", mensagem)

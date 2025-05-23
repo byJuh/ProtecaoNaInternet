@@ -5,7 +5,7 @@ import {Registro} from "../utils/types";
                        (Recebe: domain-name, length)
 */
 
-export const getRegistro = async function (macAddress: string): Promise<Registro[]> {
+export const getRegistro = async function (macAddress: string): Promise<Registro[]>{
     const dominioParaRegistro = {
         "domain-name": macAddress,
         "length": '30'
@@ -26,21 +26,22 @@ export const getRegistro = async function (macAddress: string): Promise<Registro
             if(Array.isArray(resposta)) {
                 if(resposta.length > 0){
                     //devolveu os dominios
-                    console.error(resposta)
+                    //console.error(resposta)
                     return resposta
                 }else{
                     Alert.alert("Nenhum domínio encontrado")
                     return []
                 }
             } else {
-                Alert.alert("Erro", "Verifique o DNS no celular ou a internet")
+                Alert.alert("Erro", resposta['error'])
                 return []
-            }
+            } 
         } else {
-            throw new Error("Erro ao tentar pegar os sites!!");
+            Alert.alert("Erro", "Erro ao tentar pegar os sites!!");
+            return []
         }
     }catch(error){
-        throw new Error("Erro de rede: " + error);
+        throw new Error("Erro de rede: Network Request Failed");
     }
 }
 
@@ -78,14 +79,12 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
                 } else {
                     Alert.alert('Erro', resposta['Error'])
                 }
-            } else {
-                throw new Error("Erro ao tentar bloquear site!!");
             }
         } else {
-            throw new Error("Erro ao tentar bloquear site!!");
+            Alert.alert("Erro ao tentar bloquear site!!");
         }
     } catch (error) {
-        throw new Error("Erro de rede: " + error);
+        throw new Error("Erro de rede: Network Request Failed");
     }
 }
 
@@ -114,14 +113,12 @@ export const createGroup = async function(group: string) {
                 }else {
                     Alert.alert('Erro', resposta['Exist'])
                 }
-            } else {
-                throw new Error("Erro ao criar grupo!!");
             }
         } else {
-            throw new Error("Erro ao criar grupo!!");
+            Alert.alert("Erro", "Erro ao criar grupo!!");
         }
     } catch(error) {
-        throw new Error("Erro de rede: " + error);
+        throw new Error("Erro de rede: Network Request Failed");
     }
 }
 
@@ -149,15 +146,13 @@ export const addClient = async function(address: string, group: string) {
                 }else{
                     Alert.alert('Erro', resposta['Error'])
                 }
-            } else {
-                throw new Error("Erro ao criar grupo!!");
             }
         } else {
-            throw new Error("Erro ao criar grupo!!");
+            Alert.alert('Erro',"Erro ao criar grupo!!");
         }
     }catch(error){
-        console.error(JSON.stringify(error));
-        throw new Error("Erro de rede: " + error);
+        //console.error(JSON.stringify(error));
+        throw new Error("Erro de rede: Network Request Failed");
     }
 }
 
@@ -192,14 +187,12 @@ export const deleteClient = async function(client_address: string, group_name: s
                 } else {
                     Alert.alert('Erro', resposta['Error'])
                 }
-            } else {
-                throw new Error("Erro ao criar grupo!!");
-            }
+            } 
         } else {
-            throw new Error("Erro ao criar grupo!!");
+            Alert.alert("Erro" ,"Erro ao criar grupo!!");
         }
     } catch(error){
-        throw new Error("Erro de rede: " + error);
+        throw new Error("Erro de rede: Network Request Failed");
     }
 }
 
@@ -226,15 +219,13 @@ export const deleteGroup = async function(grupo: string, macAddress: string[]) {
                     return resposta['message']
                 }else{
                     Alert.alert('Erro', resposta['Error'])
-                    console.error('erro')
+                    //console.error('erro')
                 }
-            } else {
-                throw new Error("Erro ao deletar grupo!!");
             }
         } else {
-            throw new Error("Erro ao deletar grupo!!");
+            Alert.alert("Erro", "Erro ao deletar grupo!!");
         }
     } catch(error) {
-        throw new Error("Erro de rede: " + error);
+        throw new Error("Erro de rede: Network Request Failed");
     }
 }

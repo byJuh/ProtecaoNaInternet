@@ -1,29 +1,32 @@
-import React from "react";
-import { fireEvent, render, waitFor, screen } from "@testing-library/react-native";
-import { salvarDispositivos, carregarDispositivos, carregarGrupos } from "../salvarDispositivos_antigo";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { salvarDispositivos, carregarDispositivos, carregarGrupos, deletarDispositivo, deletarGrupo, verificarQuantidadeGrupos, deletarCliente } from "../salvarDispostivos";
+import { MMKV } from "../../utils/inicializarMMKV";
+import { Alert } from "react-native";
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
-    getItem: jest.fn(),
-    setItem: jest.fn(),
+jest.mock('../../utils/inicializarMMKV', () => ({
+    MMKV: {
+        getString: jest.fn(),
+        setString: jest.fn(),
+    }
+    
 }));
 
 describe('Testes de armazenamento de dispositivos', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        jest.spyOn(Alert, 'alert');
     });
 
-    it('Salvando um dispositivo em um novo grupo', async () => {
-        (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
+    it('Salvando um dispositivo em um novo grupo', () => {
+        (MMKV.getString as jest.Mock).mockReturnValue(null);
 
         //Simulando a chamada da funcao, adicionando um dispositivo
-        await salvarDispositivos('NovoDispositivo', 'FF:FF:FF:FF:FF:FF', 'NovoGrupo');
+        salvarDispositivos('NovoDispositivo', 'FF:FF:FF:FF:FF:FF', 'NovoGrupo');
         
         //espera que o item seja salvo
-        expect(AsyncStorage.setItem).toHaveBeenCalled();
+        expect(MMKV.setString).toHaveBeenCalled();
         
-        const dadosSalvos = JSON.parse((AsyncStorage.setItem as jest.Mock).mock.calls[0][1]);
+        const dadosSalvos = JSON.parse((MMKV.setString as jest.Mock).mock.calls[0][1]);
         
         expect(dadosSalvos['NovoGrupo']).toEqual({
             quantidade: 1,
@@ -33,7 +36,7 @@ describe('Testes de armazenamento de dispositivos', () => {
         });
     });
 
-    it('Salvando um dispositivo em um grupo existente', async () => {
+    it('Salvando um dispositivo em um grupo existente', () => {
         const grupoSalvo = {
             Grupo: {
                 quantidade: 1,
@@ -44,13 +47,13 @@ describe('Testes de armazenamento de dispositivos', () => {
         };
 
         //simulando que ja tem grupo salvo
-        (AsyncStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(grupoSalvo))
+        (MMKV.getString as jest.Mock).mockReturnValue(JSON.stringify(grupoSalvo))
         
-        await salvarDispositivos('SegundoNovoDispositivo', 'AA:AA:AA:AA:AA:AA', 'Grupo');
+        salvarDispositivos('SegundoNovoDispositivo', 'AA:AA:AA:AA:AA:AA', 'Grupo');
 
-        expect(AsyncStorage.setItem).toHaveBeenCalled();
+        expect(MMKV.setString).toHaveBeenCalled();
 
-        const dadosSalvos = JSON.parse((AsyncStorage.setItem as jest.Mock).mock.calls[0][1]);
+        const dadosSalvos = JSON.parse((MMKV.setString as jest.Mock).mock.calls[0][1]);
 
         expect(dadosSalvos['Grupo'].quantidade).toBe(2);
         expect(dadosSalvos['Grupo']).toEqual({
@@ -62,7 +65,62 @@ describe('Testes de armazenamento de dispositivos', () => {
         })
     });
 
-    it('Carregando os dispositivos de um grupo', async () => {
+    //fazer de um caso ja exista o dispositivo no grupo 
+    it('Salvando um dispositivo sendo que ele já está salvo', () => {
+        const grupoSalvo = {
+            Grupo: {
+                quantidade: 1,
+                dispositivos: [
+                    {nome: 'NovoDispositivo', mac: 'FF:FF:FF:FF:FF:FF'}
+                ]
+            }
+        };
+
+        //simulando que ja tem grupo salvo
+        (MMKV.getString as jest.Mock).mockReturnValue(JSON.stringify(grupoSalvo))
+        
+        const responde = salvarDispositivos('SegundoNovoDispositivo', 'FF:FF:FF:FF:FF:FF', 'Grupo');
+        expect(responde).toEqual(undefined)
+
+        expect(Alert.alert).toHaveBeenCalledWith("Erro", "Esse dispositivo ja esta salvo no grupo!!");
+        
+    });
+
+    it('Deletando dispositivos', () => {
+        const grupoSalvo = {
+            Grupo: {
+                quantidade: 2,
+                dispositivos: [
+                    {nome: 'Dispositivo', mac: 'FF:FF:FF:FF:FF:FF'},
+                    {nome: 'Dispositivo2', mac: 'AA:AA:AA:AA:AA:AA'}
+                ]
+            },
+            Grupo2: {
+                quantidade: 1,
+                dispositivos: [
+                    {nome: 'Dispositivo', mac: '11:11:11:11:11:11'}
+                ]
+            }
+        };
+
+        (MMKV.getString as jest.Mock).mockReturnValue(JSON.stringify(grupoSalvo));
+
+        deletarDispositivo('Dispositivo', 'FF:FF:FF:FF:FF:FF', 'Grupo');
+        
+        expect(MMKV.setString).toHaveBeenCalled();
+
+        const dadosSalvos = JSON.parse((MMKV.setString as jest.Mock).mock.calls[0][1]);
+
+        expect(dadosSalvos['Grupo'].quantidade).toBe(1);
+        expect(dadosSalvos['Grupo']).toEqual({
+            quantidade: 1,
+            dispositivos: [
+                {nome: 'Dispositivo2', mac: 'AA:AA:AA:AA:AA:AA'}
+            ]
+        })
+    })
+
+    it('Carregando os dispositivos de um grupo', () => {
         const gruposSalvos = {
             Grupo: {
                 quantidade: 2,
@@ -73,11 +131,11 @@ describe('Testes de armazenamento de dispositivos', () => {
             }
         };
 
-        (AsyncStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(gruposSalvos));
+        (MMKV.getString as jest.Mock).mockReturnValue(JSON.stringify(gruposSalvos));
         
-        const dispositivos = await carregarDispositivos('Grupo');
+        const dispositivos = carregarDispositivos('Grupo');
         
-        expect(AsyncStorage.getItem).toHaveBeenCalled();
+        expect(MMKV.getString).toHaveBeenCalled();
 
         expect(dispositivos).toHaveLength(2);
         expect(dispositivos[0].nome).toBe('NovoDispositivo');
@@ -85,9 +143,33 @@ describe('Testes de armazenamento de dispositivos', () => {
 
     });
 
-    it('Carregando os grupos salvos', async() => {
+    //retorna vazio caso nn exista o grupo e os dispostivos
+    it('Carregando os dispositivos caso nao exista o grupo', () => {
         const gruposSalvos = {
-            'Grupo1': {
+            Grupo: {
+                quantidade: 2,
+                dispositivos: [
+                    {nome: 'NovoDispositivo', mac: 'FF:FF:FF:FF:FF:FF'},
+                    {nome: 'SegundoNovoDispositivo', mac: 'AA:AA:AA:AA:AA:AA'}
+                ]
+            }
+        };
+
+        (MMKV.getString as jest.Mock).mockReturnValue(JSON.stringify(gruposSalvos));
+        
+        const dispositivos = carregarDispositivos('NovoGrupo');
+        
+        expect(MMKV.getString).toHaveBeenCalled();
+
+        expect(dispositivos).toEqual([]);
+
+    })
+
+    //Fazer para !grupos[nomeGrupo].dispositivos
+
+    it('Carregando os grupos salvos', () => {
+        const gruposSalvos = {
+            Grupo1: {
                 quantidade: 2,
                 dispositivos: [
                     {nome: 'NovoDispositivo', mac: 'FF:FF:FF:FF:FF:FF'},
@@ -95,7 +177,7 @@ describe('Testes de armazenamento de dispositivos', () => {
                     
                 ]
             },
-            'Grupo2': {
+            Grupo2: {
                 quantidade: 1,
                 dispositivos: [
                     {nome: 'SegundoNovoDispositivo', mac: 'AA:AA:AA:AA:AA:AA'}
@@ -103,13 +185,123 @@ describe('Testes de armazenamento de dispositivos', () => {
             }
         };
 
-        (AsyncStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(gruposSalvos));
+        (MMKV.getString as jest.Mock).mockReturnValue(JSON.stringify(gruposSalvos));
 
-        const dadosSalvos = await carregarGrupos();
+        const dadosSalvos = carregarGrupos();
 
         expect(dadosSalvos.size).toBe(2);
         expect(dadosSalvos.get('Grupo1')).toBe(2);
         expect(dadosSalvos.get('Grupo2')).toBe(1);
+    });
+
+    it('Deletando grupo', () => {
+        const grupoSalvo = {
+            Grupo: {
+                quantidade: 2,
+                dispositivos: [
+                    {nome: 'Dispositivo', mac: 'FF:FF:FF:FF:FF:FF'},
+                    {nome: 'Dispositivo2', mac: 'AA:AA:AA:AA:AA:AA'}
+                ]
+            },
+            Grupo2: {
+                quantidade: 1,
+                dispositivos: [
+                    {nome: 'Dispositivo', mac: '11:11:11:11:11:11'}
+                ]
+            }
+        };
+
+        (MMKV.getString as jest.Mock).mockReturnValue(JSON.stringify(grupoSalvo));
+
+        deletarGrupo('Grupo2');
+        
+        expect(MMKV.setString).toHaveBeenCalled();
+
+        const dadosSalvos = JSON.parse((MMKV.setString as jest.Mock).mock.calls[0][1]);
+
+        expect(dadosSalvos).toEqual({
+            Grupo: {
+                quantidade: 2,
+                dispositivos: [
+                    {nome: 'Dispositivo', mac: 'FF:FF:FF:FF:FF:FF'},
+                    {nome: 'Dispositivo2', mac: 'AA:AA:AA:AA:AA:AA'}
+                ]
+            }
+        });
+    });
+
+    it("Verificando a quantidade de grupos", () => {
+        const grupoSalvo = {
+            Grupo: {
+                quantidade: 2,
+                dispositivos: [
+                    {nome: 'Dispositivo', mac: 'FF:FF:FF:FF:FF:FF'},
+                    {nome: 'Dispositivo2', mac: 'AA:AA:AA:AA:AA:AA'}
+                ]
+            },
+            Grupo2: {
+                quantidade: 1,
+                dispositivos: [
+                    {nome: 'Dispositivo', mac: '11:11:11:11:11:11'}
+                ]
+            }
+        };
+
+        (MMKV.getString as jest.Mock).mockReturnValue(JSON.stringify(grupoSalvo));
+
+        const valor = verificarQuantidadeGrupos()
+
+        expect(valor).toEqual(true)
+    });
+
+    it("Verificando a quantidade de grupos, caso não tenho nada salvo", () => {
+    
+        (MMKV.getString as jest.Mock).mockReturnValue(null);
+
+        const valor = verificarQuantidadeGrupos()
+
+        expect(valor).toEqual(false)
+    });
+
+    it('Deletando cliente', () => {
+        const grupoSalvo = {
+            Grupo: {
+                quantidade: 2,
+                dispositivos: [
+                    {nome: 'Dispositivo', mac: 'FF:FF:FF:FF:FF:FF'},
+                    {nome: 'Dispositivo2', mac: 'AA:AA:AA:AA:AA:AA'}
+                ]
+            },
+            Grupo2: {
+                quantidade: 1,
+                dispositivos: [
+                    {nome: 'Dispositivo', mac: '11:11:11:11:11:11'}
+                ]
+            }
+        };
+
+        (MMKV.getString as jest.Mock).mockReturnValue(JSON.stringify(grupoSalvo));
+
+        deletarCliente('Grupo', 'FF:FF:FF:FF:FF:FF');
+
+        expect(MMKV.setString).toHaveBeenCalled();
+
+        const dadosSalvos = JSON.parse((MMKV.setString as jest.Mock).mock.calls[0][1]);
+
+        expect(dadosSalvos).toEqual({
+            Grupo: {
+                quantidade: 1,
+                dispositivos: [
+                    {nome: 'Dispositivo2', mac: 'AA:AA:AA:AA:AA:AA'}
+                ]
+            },
+            Grupo2: {
+                quantidade: 1,
+                dispositivos: [
+                    {nome: 'Dispositivo', mac: '11:11:11:11:11:11'}
+                ]
+            }
+        });
     });
 
     //FAZER OS TESTES DE ERROS!!
