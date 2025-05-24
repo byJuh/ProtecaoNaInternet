@@ -72,7 +72,7 @@ export function deletarDispositivo(nomeDispositivo: string, macAddressFormatted:
 
 //Promise: Objeto que representa a Completion ou Failure de uma operação assíncrona
 //Usada para lidar com tarefas que levam tempo para serem concluídas
-export function carregarDispositivos(nomeGrupo: string): Dispositivo[]  {
+export function carregarDispositivos(nomeGrupo: string): Dispositivo[] {
     try{
         const dispositivosSalvos = MMKV.getString('gruposDispositivos')
         const grupos: GruposDispositivos = dispositivosSalvos ? JSON.parse(dispositivosSalvos) : {};

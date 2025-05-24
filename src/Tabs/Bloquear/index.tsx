@@ -19,10 +19,12 @@ export default function Bloquear(){
     const [registros, setRegistros] = useState<Registro[]>([]);
     const [selectedValues, setSelectedValues] = useState("");
     
+    //Select com os grupos, pegando os grupos. Se tiver só um, seleciona direto o grupo
     useEffect(() => {
       fetchGrupos(setGrupos, setGruposSelecionados);
     }, []) 
     
+    //Select com os dispositivos. Se tiver só um, seleciona direto o dispostivo, salvando o mac
     useEffect(() => {
         fetchDispositivos(grupoSelecionado, setMacAddress, setDispositivos);
     }, [grupoSelecionado])

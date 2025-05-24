@@ -9,7 +9,7 @@ export default function fetchDispositivos(grupoSelecionado: string, setMacAddres
         if(grupoSelecionado != null) {
             const dispositivosSalvos = carregarDispositivos(grupoSelecionado);
                     
-            if(dispositivosSalvos != null) { 
+            if(dispositivosSalvos) { 
               if(dispositivosSalvos.length == 1) setMacAddress(dispositivosSalvos[0].mac)
               setDispositivos(dispositivosSalvos);
             }

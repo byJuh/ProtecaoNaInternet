@@ -7,7 +7,7 @@ export default function getDispositivos(nomeGrupo: string, setDispositivos: Disp
     try {
         const dispositivosSalvos = carregarDispositivos(nomeGrupo);
                 
-        if(dispositivosSalvos != null) setDispositivos(dispositivosSalvos);
+        if(dispositivosSalvos) setDispositivos(dispositivosSalvos);
             
     } catch (error: unknown) {
         if (error instanceof Error) {
