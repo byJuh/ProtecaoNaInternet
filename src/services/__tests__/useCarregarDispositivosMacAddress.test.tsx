@@ -5,7 +5,7 @@ import fetchDispositivos from "../useCarregarDispositivosMacAddress";
 jest.mock("../salvarDispostivos");
 jest.mock("react-native-mmkv-storage");
 
-describe('Testando o getDispositivo', () => {
+describe('Testando o fetchDispositivos', () => {
     const mockSetDispositivos = jest.fn();
     const mockSetMacAddress = jest.fn();
     const { carregarDispositivos } = require("../salvarDispostivos");

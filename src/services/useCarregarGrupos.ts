@@ -6,17 +6,17 @@ export default function fetchGrupos(setGrupos: Dispatch<SetStateAction<Map<strin
       try {
         const gruposSalvos = carregarGrupos();
 
-        if(gruposSalvos != null) {
+        if(gruposSalvos) {
             setGrupos(gruposSalvos)
             if(gruposSalvos.size == 1) {
                 const grupo = gruposSalvos.keys().next().value
-                if(grupo != undefined) setGruposSelecionados(grupo)
+                if(grupo) setGruposSelecionados(grupo)
             }
         }
         
         } catch (error: unknown) {
           if (error instanceof Error) {  
-            Alert.alert("Erro", error.message);
+              Alert.alert("Erro", error.message);
             }
          }
     }

@@ -1,4 +1,4 @@
-import { Dispositivo, Grupo, GruposDispositivos } from "../utils/types";
+import { Dispositivo, GruposDispositivos } from "../utils/types";
 import { Alert } from 'react-native';
 import { MMKV } from '../utils/inicializarMMKV';
 

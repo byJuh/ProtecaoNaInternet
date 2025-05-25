@@ -6,8 +6,7 @@ export default function getGruposQtdDispositivos(setGrupos: Dispatch<SetStateAct
     try {
         const gruposSalvos = carregarGrupos();
                 
-        //transformando em array [nomeGrupo: string, quantidade: number]
-        if(gruposSalvos != null) setGrupos(Array.from(gruposSalvos));
+        if(gruposSalvos) setGrupos(Array.from(gruposSalvos));
             
     } catch (error: unknown) {
         if (error instanceof Error) {
