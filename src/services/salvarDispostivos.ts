@@ -5,7 +5,7 @@ import { MMKV } from '../utils/inicializarMMKV';
 export function salvarDispositivos(nomeDispositivo: string, macAddressFormatted: string, nomeGrupo: string){
     try{
         //pegando o item salvo, caso nao tenha ira ser criado
-        const gruposSalvos = MMKV.getString('gruposDispositivos')
+        const gruposSalvos = MMKV.getString('gruposDispositivos');
         
         let grupos: GruposDispositivos = gruposSalvos ? JSON.parse(gruposSalvos) : {};
     

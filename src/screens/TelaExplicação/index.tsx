@@ -14,7 +14,9 @@ export default function TelaExplicacao(){
     return(
         <View style={[styles.container, {backgroundColor: "#C8D9E6"}]}>
             <View style={styles.blocoTitulo}>
-                <TouchableOpacity style={{marginRight: 20}}>
+                <TouchableOpacity accessibilityRole = 'button' accessibilityLabel="Voltar para Home" style={{marginRight: 20}} 
+                    onPress={() => navigation.replace('Home')}
+                >
                     <MaterialIcons name='arrow-back' color='#FFFFFF' size={35}/>
                 </TouchableOpacity>
                 <Text style={styles.textoTitulo}>
@@ -28,8 +30,9 @@ export default function TelaExplicacao(){
                     {'\t'} 2. Primeiramente será criado um grupo e um disposivo desse grupo.
                 </Text>
             </View>
-            <TouchableOpacity style={[styles.btn, {position: 'absolute', bottom: '5%'}]}
-            onPress={() => navigation.navigate('Cadastrar_Grupo')}>
+            <TouchableOpacity accessibilityRole = 'button' style={[styles.btn, {position: 'absolute', bottom: '5%'}]}
+                onPress={() => navigation.navigate('Cadastrar_Grupo')}
+            >
                 <Text style={styles.btnTexto}>
                     Continuar
                 </Text>

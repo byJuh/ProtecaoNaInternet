@@ -19,10 +19,10 @@ export default function AdicionarGrupos(){
         getGruposQtdDispositivos(setGrupos)
     }, [])
     
-
     const renderItem = ({ item }: { item: [string, number] }) => (
         <TouchableOpacity style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}
             onPress={() => navigation.navigate('Adicionar_Dispositivo', {nomeGrupo: item[0]})}
+            accessibilityRole="button"
         >
             <Text style={{ fontWeight: 'bold', fontSize: 22}}>{item[0]}</Text>
             <Text style={{ fontSize: 20}}>{'\t\t'} quantidade: {item[1]}</Text>
@@ -34,6 +34,7 @@ export default function AdicionarGrupos(){
             <View style={{ flex: 1, alignItems: 'center', width: '100%', paddingTop: 20}}>
                 <SafeAreaView style={styles.spaceContainerAddBlock}>
                     <FlatList
+                        testID="visualizar-grupos"
                         data={grupos}
                         renderItem={renderItem}
                         keyExtractor={([nome]) => nome}
@@ -43,8 +44,9 @@ export default function AdicionarGrupos(){
 
                 <View style={{flexDirection: 'row', height: '100%'}}>
                     <TouchableOpacity 
+                        accessibilityRole="button"
                         style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156'}]} 
-                        onPress={() => navigation.replace('Cadastrar_Grupo')}
+                        onPress={() => navigation.navigate('Cadastrar_Grupo')}
                     >
                         <Text style={styles.btnTexto}>
                             Novo Grupo
@@ -53,7 +55,8 @@ export default function AdicionarGrupos(){
 
                     <TouchableOpacity 
                         style={[styles.btn, {marginTop: 50, backgroundColor: '#2F4156', marginLeft: 10}]} 
-                        onPress={() => navigation.replace('Excluir_Grupo')}
+                        onPress={() => navigation.navigate('Excluir_Grupo')}
+                        accessibilityRole="button"
                     >
                         <Text style={styles.btnTexto}>
                             Excluir Grupo

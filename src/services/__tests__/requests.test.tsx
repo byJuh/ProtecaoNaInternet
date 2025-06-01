@@ -1,7 +1,13 @@
 import { Alert } from "react-native";
 import { addClient, addDomainBlocklist, createGroup, deleteClient, deleteGroup, getRegistro } from "../requests";
-
 /* Adicionar o que é novo e os erros que tem!! */
+
+const mockSignal = {
+    aborted: false,
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    onabort: null,
+} as unknown as AbortSignal
 
 describe('Testando request de queries do Pi Hole', () => {
     
@@ -16,10 +22,11 @@ describe('Testando request de queries do Pi Hole', () => {
 
         global.fetch = jest.fn().mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve(mockData)
+            json: () => Promise.resolve(mockData),
+            signal: mockSignal
         });
 
-        const response = await getRegistro('FF:FF:FF:FF:FF:FF');
+        const response = await getRegistro('FF:FF:FF:FF:FF:FF', mockSignal);
         expect(response).toEqual(mockData);
     });
 
@@ -31,24 +38,33 @@ describe('Testando request de queries do Pi Hole', () => {
 
         global.fetch = jest.fn().mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve(erro)
+            json: () => Promise.resolve(erro),
+            signal: mockSignal
         });
 
-        const response = await getRegistro('FF:FF:FF:FF:FF:FF');
+        const response = await getRegistro('FF:FF:FF:FF:FF:FF',  mockSignal);
         expect(response).toEqual([]);
 
         expect(Alert.alert).toHaveBeenCalledWith("Erro", "Nao foi possivel pegar os registros");
 
-    })
+    });
+
+    it('Lidando com erros, abortando fetch', async () => {
+         global.fetch = jest.fn().mockRejectedValue(new DOMException('Requisição abortada', 'AbortError'));
+
+        const response = await getRegistro('FF:FF:FF:FF:FF:FF',  mockSignal);
+        expect(response).toEqual([]);
+    });
 
     it('Lidando com erro, registro vazio', async () => {
     
         global.fetch = jest.fn().mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve([])
+            json: () => Promise.resolve([]),
+            signal: mockSignal
         });
 
-        const response = await getRegistro('FF:FF:FF:FF:FF:FF');
+        const response = await getRegistro('FF:FF:FF:FF:FF:FF',  mockSignal);
         expect(response).toEqual([]);
 
         expect(Alert.alert).toHaveBeenCalledWith("Nenhum domínio encontrado");
@@ -60,7 +76,7 @@ describe('Testando request de queries do Pi Hole', () => {
             ok: false,
         });
         
-        const response = await getRegistro('FF:FF:FF:FF:FF:FF');
+        const response = await getRegistro('FF:FF:FF:FF:FF:FF', mockSignal);
         expect(response).toEqual([]);
 
         expect(Alert.alert).toHaveBeenCalledWith("Erro", "Erro ao tentar pegar os sites!!");
@@ -70,7 +86,7 @@ describe('Testando request de queries do Pi Hole', () => {
     it('Lidando com Network error', async() => {
         global.fetch = jest.fn().mockRejectedValue(new Error('Network Request Failed'));
 
-        await expect(getRegistro('FF:FF:FF:FF:FF:FF'))
+        await expect(getRegistro('FF:FF:FF:FF:FF:FF', mockSignal))
             .rejects
             .toThrow("Erro de rede: Network Request Failed");
     });

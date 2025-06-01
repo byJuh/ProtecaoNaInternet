@@ -10,7 +10,7 @@ import pegandoRegistros from "../../services/useCarregarListaDeSites";
 import { addDomainBlocklist } from "../../services/requests";
 import { useFocusEffect } from "@react-navigation/native";
 
-export default function Bloquear(){
+export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?: (domain: string) => void }){
     
     const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);
     const [grupos, setGrupos] = useState<Map<string,number>>(new Map());
@@ -19,6 +19,7 @@ export default function Bloquear(){
     const [registros, setRegistros] = useState<Registro[]>([]);
     const [selectedValues, setSelectedValues] = useState("");
     
+
     //Select com os grupos, pegando os grupos. Se tiver só um, seleciona direto o grupo
     useEffect(() => {
       fetchGrupos(setGrupos, setGruposSelecionados);
@@ -27,37 +28,48 @@ export default function Bloquear(){
     //Select com os dispositivos. Se tiver só um, seleciona direto o dispostivo, salvando o mac
     useEffect(() => {
         fetchDispositivos(grupoSelecionado, setMacAddress, setDispositivos);
-    }, [grupoSelecionado])
+      }, [grupoSelecionado])
         
     //rodar daqui 4 min
     useFocusEffect(
       useCallback(() => {
-          if(!macAddress ||  grupos.size === 0) return;
-        
-          pegandoRegistros(setRegistros, macAddress);
+          const controller = new AbortController();
+          const signal = controller.signal;
+
+          if(!macAddress || grupos.size === 0) return;
+                   
+          pegandoRegistros(setRegistros, macAddress, signal);
           
           const interval = setInterval(() => {
-            pegandoRegistros(setRegistros, macAddress)
+            pegandoRegistros(setRegistros, macAddress, signal);
           }, 120000)
         
           return () => {
+            //limpa o tempo, nn fazendo com que realize o comando de get a cada 4 min
             clearInterval(interval);
-            setRegistros([])
-            setMacAddress("")
-            setGruposSelecionados("")
-            setSelectedValues("")
+
+            //aborta o fetch, para que, ao sair a tela de foco, nn continue a realização de getRegistro
+            controller.abort();
+            
+            //limpa os campos
+            setRegistros([]);
+            setMacAddress("");
+            setGruposSelecionados("");
+            setSelectedValues("");
           }
         }, [macAddress, grupoSelecionado])
-    )
+    );
      
-  
+    //salva o valor selecionado
     const pegandoValores = (domain: string) => {
       setSelectedValues(domain)
+      if (onSelecionarDominio) onSelecionarDominio(domain); 
     }
-
+    //como os dados vao ser mostrado no FlatList
     const renderItem = ({ item }: { item: Registro }) => (
       <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc', flexDirection: 'row'}}>
           <BouncyCheckbox
+            testID={`checkbok-domain-${item.domain}`}
             size={22}
             fillColor="#2F4156"
             unFillColor="#FFFFFF"
@@ -70,13 +82,18 @@ export default function Bloquear(){
             {item.domain}
           </Text>
       </View>
-    );
+    ); 
 
+    //Serve para bloquear os sites
     const bloquearSites = async () => {
-      console.error(selectedValues)
+      //console.error(selectedValues) 
       const response = await addDomainBlocklist(selectedValues, grupoSelecionado)
 
-      if(response) Alert.alert(response)
+      if(response) {
+        Alert.alert(response)
+
+        //salvo no MMKV
+      }
     }
 
     const excluirSites = async () => {
@@ -85,10 +102,10 @@ export default function Bloquear(){
     
     return(
       <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
-        <View style = {[styles.select, {marginTop: 15, width: '50%', borderWidth: 2, borderColor: '#567C8D'}]}>
-          <RNPickerSelect 
-            touchableWrapperProps={{testID: 'picker-grupos'}}
-            placeholder={{ label: 'Grupos', value: null }}
+        <View style = {[styles.select, {marginTop: 15, width: '50%', borderWidth: 2, borderColor: '#567C8D'}]}
+              testID="picker-groups"
+        >
+          <RNPickerSelect
             items={Array.from(grupos.keys()).map(nomeGrupo => ({
               label: nomeGrupo,
               value: nomeGrupo
@@ -96,12 +113,14 @@ export default function Bloquear(){
             onValueChange={(value) => setGruposSelecionados(value)} 
             value={grupoSelecionado}
             style={pickerSelectStylesBloquear}
+            placeholder={{ label: 'Grupos', value: null }}
           />
         </View>
         {grupos && grupoSelecionado && (
-          <View style = {[styles.select, {marginTop: 15, width: '50%', borderWidth: 2, borderColor: '#567C8D'}]}>
+          <View style = {[styles.select, {marginTop: 15, width: '50%', borderWidth: 2, borderColor: '#567C8D'}]}
+                testID="picker-dispositivos"
+          >
             <RNPickerSelect 
-              touchableWrapperProps={{testID: 'picker-dispositivos'}}
               placeholder={{ label: 'Dispositivos', value: null }}
               items={dispositivos.map(d => ({
                 label: `${d.nome} (${d.mac})`, 
@@ -113,37 +132,28 @@ export default function Bloquear(){
             />
           </View>
         )}
-            <View style={{ flex: 1, alignItems: 'center', width: '100%', paddingTop: 20}}>
-                <SafeAreaView style={styles.spaceContainerAddBlock}>
-                    <FlatList 
-                      data={registros} 
-                      renderItem={renderItem}
-                      ListEmptyComponent={<Text style={{fontSize: 20, alignSelf: "center"}}> Selecione um grupo e um dispositivo </Text>}              
-                    />
-                </SafeAreaView>
+        <View style={{ flex: 1, alignItems: 'center', width: '100%', paddingTop: 20}}>
+          <SafeAreaView style={styles.spaceContainerAddBlock}>
+            <FlatList 
+              testID="visualizacao-dominios"
+              data={registros} 
+              renderItem={renderItem}
+              ListEmptyComponent={<Text style={{fontSize: 20, alignSelf: "center"}}> Selecione um grupo e um dispositivo </Text>}              
+            />
+          </SafeAreaView>
 
-                <View style={{flexDirection: 'row', height: '100%'}}>
-                  <TouchableOpacity 
-                      style={[styles.btn, {marginTop: '5%', backgroundColor: '#2F4156', height: '10%'}]} 
-                      onPress={() => bloquearSites()}
-                  >
-                      <Text style={styles.btnTexto}>
-                          Bloquear
-                      </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity 
-                      style={[styles.btn, {marginTop: '5%', backgroundColor: '#2F4156', marginLeft: 10, height: '10%'}]} 
-                      onPress={() => excluirSites()}
-                  >
-                      <Text style={styles.btnTexto}>
-                          Excluir bloqueio
-                      </Text>
-                  </TouchableOpacity>
-                </View>
-                
-            </View>
-        </SafeAreaView>
-    
-    )
+          <View style={{flexDirection: 'row', height: '100%'}}>
+            <TouchableOpacity 
+              style={[styles.btn, {marginTop: '5%', backgroundColor: '#2F4156', height: '10%'}]} 
+              onPress={() => bloquearSites()}
+              accessibilityRole="button"
+            >
+              <Text style={styles.btnTexto}>
+                Bloquear
+              </Text>
+            </TouchableOpacity>
+          </View>       
+        </View>
+      </SafeAreaView>
+    );
 }

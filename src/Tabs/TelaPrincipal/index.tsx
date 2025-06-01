@@ -16,26 +16,7 @@ export default function TelaPrincipal(){
     const [grupoSelecionado, setGruposSelecionados] = useState("");
     const [registros, setRegistros] = useState<Registro[]>([]);
 
-    fetchGrupos(setGrupos, setGruposSelecionados);
-
-    useEffect(() => {
-      fetchDispositivos(grupoSelecionado, setMacAddress, setDispositivos);
-    }, [grupoSelecionado])
-    
-    useEffect(() => {
-      if(!macAddress) return;
-
-      const interval = setInterval(() => {
-        pegandoRegistros(setRegistros, macAddress)
-      }, 120000)
-
-      pegandoRegistros(setRegistros, macAddress)
-
-      return () => clearInterval(interval)
-    }, [macAddress, grupoSelecionado])
-
-
-
+  
     const escolhendoGrupos = async (value: string) => {setGruposSelecionados(value)}
 
     const renderItem = ({ item }: { item: Registro }) => (

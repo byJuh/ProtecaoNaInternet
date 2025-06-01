@@ -5,7 +5,7 @@ import {Registro} from "../utils/types";
                        (Recebe: domain-name, length)
 */
 
-export const getRegistro = async function (macAddress: string): Promise<Registro[]>{
+export const getRegistro = async function (macAddress: string, signal: AbortSignal): Promise<Registro[]>{
     const dominioParaRegistro = {
         "domain-name": macAddress,
         "length": '30'
@@ -17,7 +17,8 @@ export const getRegistro = async function (macAddress: string): Promise<Registro
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(dominioParaRegistro)
+            body: JSON.stringify(dominioParaRegistro),
+            signal: signal
         });
 
         if(response.ok){
@@ -25,8 +26,6 @@ export const getRegistro = async function (macAddress: string): Promise<Registro
 
             if(Array.isArray(resposta)) {
                 if(resposta.length > 0){
-                    //devolveu os dominios
-                    //console.error(resposta)
                     return resposta
                 }else{
                     Alert.alert("Nenhum domínio encontrado")
@@ -40,8 +39,12 @@ export const getRegistro = async function (macAddress: string): Promise<Registro
             Alert.alert("Erro", "Erro ao tentar pegar os sites!!");
             return []
         }
-    }catch(error){
-        throw new Error("Erro de rede: Network Request Failed");
+    }catch(error: unknown){
+        if (error instanceof DOMException && error.name === 'AbortError') {
+            return [];
+        }else{
+            throw new Error("Erro de rede: Network Request Failed");
+        } 
     }
 }
 

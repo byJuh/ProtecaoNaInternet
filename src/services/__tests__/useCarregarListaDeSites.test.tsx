@@ -4,6 +4,13 @@ import { Registro } from "../../utils/types";
 
 jest.mock("../requests");
 
+const mockSignal = {
+    aborted: false,
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    onabort: null,
+} as unknown as AbortSignal
+
 describe('Testando pegando registros', () => {
     const mockSetRegistros = jest.fn();
     const { getRegistro } = require('../requests');
@@ -18,9 +25,9 @@ describe('Testando pegando registros', () => {
 
         (getRegistro as jest.Mock).mockResolvedValue(registro);
 
-        await pegandoRegistros(mockSetRegistros, 'FF:FF:FF:FF:FF:FF');
+        await pegandoRegistros(mockSetRegistros, 'FF:FF:FF:FF:FF:FF', mockSignal);
 
-        expect(getRegistro).toHaveBeenCalledWith('FF:FF:FF:FF:FF:FF');
+        expect(getRegistro).toHaveBeenCalledWith('FF:FF:FF:FF:FF:FF', mockSignal);
         expect(mockSetRegistros).toHaveBeenCalledWith(registro);
 
     });
@@ -30,9 +37,9 @@ describe('Testando pegando registros', () => {
 
         (getRegistro as jest.Mock).mockResolvedValue(registro);
 
-        await pegandoRegistros(mockSetRegistros, 'FF:FF:FF:FF:FF:FF');
+        await pegandoRegistros(mockSetRegistros, 'FF:FF:FF:FF:FF:FF', mockSignal);
 
-        expect(getRegistro).toHaveBeenCalledWith('FF:FF:FF:FF:FF:FF');
+        expect(getRegistro).toHaveBeenCalledWith('FF:FF:FF:FF:FF:FF', mockSignal);
         expect(mockSetRegistros).not.toHaveBeenCalled();
 
     });
@@ -42,7 +49,7 @@ describe('Testando pegando registros', () => {
             throw new Error("Erro de rede: Network Request Failed");
         });
         
-        await pegandoRegistros(mockSetRegistros, 'FF:FF:FF:FF:FF:FF');
+        await pegandoRegistros(mockSetRegistros, 'FF:FF:FF:FF:FF:FF', mockSignal);
         
         expect(getRegistro).toHaveBeenCalled();
         expect(mockSetRegistros).not.toHaveBeenCalled();
