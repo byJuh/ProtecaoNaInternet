@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { pickerSelectStylesBloquear, styles } from "../../constants/styles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Dispositivo, Registro } from "../../utils/types";
 import RNPickerSelect from 'react-native-picker-select';
-import fetchGrupos from "../../services/useCarregarGrupos";
-import fetchDispositivos from "../../services/useCarregarDispositivosMacAddress";
-import pegandoRegistros from "../../services/useCarregarListaDeSites";
 
 export default function TelaPrincipal(){
 

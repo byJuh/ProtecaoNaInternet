@@ -65,7 +65,7 @@ export default function ExcluirGrupo(){
        
       }
     }catch(error){
-      console.error(error)
+      //console.error(error)
       Alert.alert("Não foi possível remover!!")
     }
   }},
@@ -75,7 +75,7 @@ export default function ExcluirGrupo(){
 
   return(
     <View style = {[styles.container, {backgroundColor: '#C8D9E6'}]}>
-      <View style = {styles.select}>
+      <View testID="picker-groups" style = {styles.select}>
         <RNPickerSelect 
           placeholder={{ label: 'Selecione um grupos', value: null }}
           items={Array.from(grupos.keys()).map(nomeGrupo => ({
@@ -91,6 +91,7 @@ export default function ExcluirGrupo(){
       <TouchableOpacity 
         style={[styles.btn, {marginTop: 100}]}
         onPress={() => excluirDispositivo()}
+        accessibilityRole="button"
       >
         <Text style={styles.btnTexto}>
           Excluir

@@ -19,7 +19,7 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
   const [macAddress, setMacAddress] = useState("");
   const [nomeDispositivo, setNomeDispositivo] = useState("");
 
-  const onChangeMacAddressHandler = async (macAddress: string) => setMacAddress(macAddress);
+  //const onChangeMacAddressHandler = async (macAddress: string) => setMacAddress(macAddress);
 
   const onChangeNomeDispositivoHandler = async (nomeDispositivo: string) => setNomeDispositivo(nomeDispositivo);
 
@@ -48,12 +48,13 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
     }
 
     //regex para formato MacAddress, verificando se ja esta no formato
-    var regex = new RegExp(/^(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2})$/)
+    //NAO PRECISA MAIS!!!
+    //var regex = new RegExp(/^(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2})$/)
 
-    if(!(macAddress.match(regex)) && !(macAddress.length == 17))  {
-        Alert.alert("MAC inválido!");
-        return;
-    } 
+    //if(!(macAddress.match(regex)) && !(macAddress.length == 17))  {
+    //    Alert.alert("MAC inválido!");
+    //    return;
+    //} 
 
     try{
       const dispositivos = carregarDispositivos(nomeGrupo)
@@ -69,6 +70,7 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
             }}
           ]
         )
+        return;
       }
       
       salvarDispositivos(nomeDispositivo, macAddress, nomeGrupo)
@@ -92,7 +94,7 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
     }catch (error){
       if(error instanceof Error) {
         Alert.alert("Erro", error.message);
-        deletarDispositivo(nomeDispositivo, macAddress, nomeGrupo);
+        //deletarDispositivo(nomeDispositivo, macAddress, nomeGrupo);
       }
     }
 
@@ -113,7 +115,7 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
               autoCapitalize = {"characters"}
               autoCorrect={false}
               onChangeText={formatMacAddress}  
-              
+              testID="input-macAddress"
           />
           <TextInput
               style={[styles.input, {marginBottom: 15, color:'#9DB2BF'}]}
@@ -121,14 +123,15 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
               placeholderTextColor={'#9DB2BF'}
               value={nomeDispositivo}
               onChangeText={onChangeNomeDispositivoHandler}
+              testID="input-nomeDispositivo"
           />
-          <TouchableOpacity>
+          <TouchableOpacity accessibilityRole="button">
             <Text  style={styles.texto}>
               Como encontrar o mac address?
             </Text>    
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.btn} onPress={() => cadastrarMacNome()}>
+          <TouchableOpacity accessibilityRole="button" style={styles.btn} onPress={() => cadastrarMacNome()}>
               <Text style = {styles.btnTexto}>
                 Adicionar
               </Text>

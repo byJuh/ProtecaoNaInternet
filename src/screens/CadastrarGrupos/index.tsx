@@ -16,22 +16,30 @@ export default function CadastrarGrupos(){
     const [nomeGrupo, setNomeGrupo] = useState("")
     const onChangeNomeGrupoHandler = async (nomeGrupo: string) => setNomeGrupo(nomeGrupo);
     
+    //COLOCAR TRY-CATCH
     const criarGrupo = async () => {
         if(nomeGrupo != '') {
-            const grupo = carregarGrupos()
+            try{
+                const grupo = carregarGrupos()
 
-            if(grupo && !grupo.has(nomeGrupo)) {
-                const response = await createGroup(nomeGrupo)
+                if(grupo && !grupo.has(nomeGrupo)) {
+                    const response = await createGroup(nomeGrupo)
 
-                if(response){
-                    console.error(response)
-                    Alert.alert(response)
-                    navigation.replace('Cadastrar_Mac', {nomeGrupo: nomeGrupo})
+                    if(response){
+                        //console.error(response)
+                        Alert.alert(response)
+                        navigation.replace('Cadastrar_Mac', {nomeGrupo: nomeGrupo})
+                    }
+                    
+                }else{
+                    Alert.alert("Esse grupo já existe!!")
+                    return;
                 }
                 
-            }else{
-                Alert.alert("Esse grupo já existe!!")
-                return;
+            }catch(error){
+                if(error instanceof Error) {
+                    Alert.alert("Erro", error.message);
+                }
             }
             
         }else{
@@ -48,9 +56,12 @@ export default function CadastrarGrupos(){
                 placeholderTextColor={'#9DB2BF'}
                 value={nomeGrupo}
                 onChangeText={onChangeNomeGrupoHandler}
+                testID="input-nomeGrupo"
             />
             <TouchableOpacity style={[styles.btn, {margin: '10%'}]}
-            onPress={() => criarGrupo()}>
+                onPress={() => criarGrupo()}
+                accessibilityRole="button"
+            >
                 <Text style={styles.btnTexto}>
                     Criar Grupo
                 </Text>

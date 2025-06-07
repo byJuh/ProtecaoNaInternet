@@ -24,6 +24,7 @@ export default function HomeScreen(){
     
     }catch(error){
       console.error("Erro ao verificar"); 
+      
     }
     
   }

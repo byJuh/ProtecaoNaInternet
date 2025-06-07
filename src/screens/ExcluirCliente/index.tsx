@@ -40,7 +40,7 @@ export default function Excluir_cliente({ route } : {route: RouteProps}){
           }
         }
     }catch(error){
-      console.error(error)
+      //console.error(error)
       Alert.alert("Não foi possível remover!!")
     }
     
@@ -48,7 +48,7 @@ export default function Excluir_cliente({ route } : {route: RouteProps}){
 
   return(
     <View style = {[styles.container, {backgroundColor: '#C8D9E6'}]}>
-      <View style = {styles.select}>
+      <View testID="picker-dispositivo" style = {styles.select}>
         <RNPickerSelect 
           placeholder={{ label: 'Selecione um dispositivo', value: null }}
           items={dispositivos.map(d => ({
@@ -64,6 +64,7 @@ export default function Excluir_cliente({ route } : {route: RouteProps}){
       <TouchableOpacity 
         style={[styles.btn, {marginTop: 100}]}
         onPress={() => excluirDispositivo()}
+        accessibilityRole="button"
       >
         <Text style={styles.btnTexto}>
           Excluir
