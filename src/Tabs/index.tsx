@@ -4,6 +4,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AdicionarGrupos from "./AdicionarGrupos";
 import Principal from "./TelaPrincipal";
 import Bloquear from "./Bloquear";
+import { TouchableOpacity } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
@@ -44,6 +45,7 @@ export default function Tabs() {
                         tabBarIcon: ({ color }) => (
                             <MaterialIcons name={tab.icon} color={color} size={42} />
                         ),
+                        tabBarButtonTestID:`tab-${tab.name}`,
                         tabBarLabelStyle:{
                             fontSize: 16, 
                             fontFamily: 'Roboto', 
@@ -60,6 +62,7 @@ export default function Tabs() {
                             borderTopRightRadius: 30,
                             height: '10%'
                         },
+                        
                     }}
                 />
             ))}
