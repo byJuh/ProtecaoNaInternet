@@ -7,9 +7,9 @@ export type RootStackParamList = {
     Tela_Explicacao: undefined,
     Cadastrar_Grupo: undefined,
     Adicionar_Dispositivo: {nomeGrupo: string},
+    Desbloquear_Sites: undefined,
     Excluir_Grupo: undefined,
     Tabs: { screen: keyof TabsParamList };
-
 }
 
 export type Grupo = {

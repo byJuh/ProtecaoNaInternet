@@ -1,4 +1,9 @@
 {
   "name": "aplicativoTcc",
-  "displayName": "aplicativoTcc"
+  "displayName": "aplicativoTcc",
+  "extra": {
+    "eas": {
+      "projectId": "b5b11ce1-0266-4bee-a681-b439fbae9b71"
+    }
+  }
 }

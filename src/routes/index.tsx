@@ -1,14 +1,15 @@
 import React from "react";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from "../screens/Home";
-import Excluir_macAddress from "../screens/ExcluirCliente";
-import Tabs from "../Tabs";
+import HomeScreen from "../features/home/screens/Home";
+import Excluir_macAddress from "../features/clientes/screens/ExcluirCliente";
+import Tabs from "../features/tabs/screens";
 import { RootStackParamList } from "../utils/types";
-import Cadastro_macAddress from "../screens/CadastrarCliente";
-import Tela_Explicacao from "../screens/TelaExplicação";
-import CadastrarGrupos from "../screens/CadastrarGrupos";
-import AdicionarDispositivos from '../screens/AdicionarDispositivos';
-import ExcluirGrupo from '../screens/ExcluirGrupo';
+import Cadastro_macAddress from "../features/clientes/screens/CadastrarCliente";
+import Tela_Explicacao from "../features/explicacao/screens/TelaExplicacao";
+import CadastrarGrupos from "../features/grupos/screens/CadastrarGrupos";
+import AdicionarDispositivos from '../features/dispositivos/screens/AdicionarDispositivos';
+import ExcluirGrupo from '../features/grupos/screens/ExcluirGrupo';
+import Desbloquear from "../features/sites/screens/Desbloqueio";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Rotas(){
@@ -47,6 +48,11 @@ export default function Rotas(){
             <Stack.Screen
                 name = 'Cadastrar_Grupo'
                 component={CadastrarGrupos}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name = 'Desbloquear_Sites'
+                component={Desbloquear}
                 options={{headerShown: false}}
             />
             <Stack.Screen

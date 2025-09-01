@@ -97,7 +97,7 @@ export const createGroup = async function(group: string) {
     }
 
     try {
-        const response = await fetch("http://192.168.0.21:8000/create_group", {
+        const response = await fetch("https://dm9ou0bjk6.execute-api.us-east-2.amazonaws.com/criarGrupo", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -105,16 +105,21 @@ export const createGroup = async function(group: string) {
             body: JSON.stringify(novoGrupo)
         });
 
+        console.log(response)
+
         if(response.ok){
             const resposta = await response.json()
 
             if(resposta){
-                if(resposta['status'] === 'ok'){
-                    return resposta['message']
-                }else if(resposta['status'] === 'erro'){
-                    Alert.alert('Erro', resposta['Error'])
+                const data = JSON.parse(resposta.body);
+
+                console.error(data['status'])
+                if(data['status'] === 'ok'){
+                    return data['message']
+                }else if(data['status'] === 'erro'){
+                    Alert.alert('Erro', data['Error'])
                 }else {
-                    Alert.alert('Erro', resposta['Exist'])
+                    Alert.alert('Erro', data['Exist'])
                 }
             }
         } else {
