@@ -37,6 +37,8 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
       if(macAddressFormatted.length != 12) return null
       else return macAddressFormatted.match(/.{1,2}/g)?.join(":") ?? '';
     */
+    
+      //ERRO AQUI, VERIFICAR -> MENOS QUE 12 CARACTERES FUNCIONA, NAO DEVERIA
       const macAddressFormated = macAddress.toUpperCase().replace(/[^a-fA-F0-9]/g, '').match(/.{1,2}/g)?.join(":") ?? '';
       setMacAddress(macAddressFormated);
   } 

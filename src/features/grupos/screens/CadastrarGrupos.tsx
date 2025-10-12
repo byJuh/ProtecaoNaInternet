@@ -25,7 +25,6 @@ export default function CadastrarGrupos(){
                     const response = await createGroup(nomeGrupo)
 
                     if(response){
-                        //console.error(response)
                         Alert.alert(response)
                         navigation.replace('Cadastrar_Mac', {nomeGrupo: nomeGrupo})
                     }

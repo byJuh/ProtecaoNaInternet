@@ -1,18 +1,31 @@
 import { Alert } from "react-native";
 import {Registro} from "../utils/types";
+import { v4 as uuidv4 } from 'uuid';
+import {  getConnectionId, waitForResponse } from "../webSockets";
 
 /**GET /get_registro - Retorna registros de consultas para um domínio específico
                        (Recebe: domain-name, length)
 */
 
 export const getRegistro = async function (macAddress: string, signal: AbortSignal): Promise<Registro[]>{
-    const dominioParaRegistro = {
-        "domain-name": macAddress,
-        "length": '30'
+    const correlationId = uuidv4();
+    const connectionId = getConnectionId();
+
+    if(!connectionId){
+        Alert.alert('Erro', 'WebSocket não conectado. Tente novamente mais tarde.');
+        return [];
     }
 
+    const dominioParaRegistro = {
+        "domain-name": macAddress,
+        'correlationId': correlationId,
+        'connectionId': connectionId
+    }
+
+    const responsePromise = waitForResponse(correlationId);
+
     try{
-        const response = await fetch("http://192.168.0.21:8000/get_registro", {
+        const response = await fetch("https://1xu6ytlkc8.execute-api.us-east-2.amazonaws.com/getQueries", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -21,24 +34,36 @@ export const getRegistro = async function (macAddress: string, signal: AbortSign
             signal: signal
         });
 
-        if(response.ok){
-            const resposta = await response.json()
+        if(response){
+            Alert.alert('Requisição enviada, aguardando resposta...');
+        }
 
-            if(Array.isArray(resposta)) {
-                if(resposta.length > 0){
-                    return resposta
-                }else{
-                    Alert.alert("Nenhum domínio encontrado")
-                    return []
-                }
+        if(!response.ok){
+            Alert.alert("Erro", "Erro ao criar grupo!!");
+            return [];
+        }
+
+        const data = await responsePromise;
+
+        if(data){
+
+            if(data['status'] === 'ok'){
+                if(Array.isArray(data['message'])) {
+                    if(data['message'].length > 0){
+                        return data['message']
+                    }else{
+                        Alert.alert("Nenhum registro encontrado")
+                        return []
+                    }
+                } 
             } else {
-                Alert.alert("Erro", resposta['error'])
-                return []
-            } 
+                Alert.alert('Erro', data['message']);
+            }
         } else {
             Alert.alert("Erro", "Erro ao tentar pegar os sites!!");
             return []
         }
+      return [];
     }catch(error: unknown){
         if (error instanceof DOMException && error.name === 'AbortError') {
             return [];
@@ -59,13 +84,25 @@ POST /add_client - Adiciona um cliente a um grupo existente
 */
 
 export const addDomainBlocklist = async function(domain: string, group: string) {
+    const correlationId = uuidv4();
+    const connectionId = getConnectionId();
+
+    if(!connectionId){
+        Alert.alert('Erro', 'WebSocket não conectado. Tente novamente mais tarde.');
+        return;
+    }
+
+    const responsePromise = waitForResponse(correlationId);
+
     const dominioParaBloquear = {
         "domain-name": domain,
-        "group-name": group
+        "group-name": group,
+        'correlationId': correlationId,
+        'connectionId': connectionId
     }
 
     try {
-        const response = await fetch("http://192.168.0.21:8000/add_domain_blocklist", {
+        const response = await fetch("https://8h6jj9qq32.execute-api.us-east-2.amazonaws.com/adicionarBloqueio", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -73,18 +110,27 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
             body: JSON.stringify(dominioParaBloquear)
         });
     
-        if(response.ok){
-            const resposta = await response.json()
+        if(response){
+            Alert.alert('Requisição enviada, aguardando resposta...');
+        }
 
-            if(resposta){
-                if(resposta['status'] === 'ok'){
-                    return resposta['message']
-                } else {
-                    Alert.alert('Erro', resposta['Error'])
-                }
-            }
+        if(!response.ok){
+            Alert.alert("Erro", "Erro ao criar grupo!!");
+            return;
+        }
+
+        const data = await responsePromise;
+
+        if(data){
+
+            if(data['status'] === 'ok'){
+                return data['message']
+            } else {
+                Alert.alert('Erro', data['message']);
+            } 
+
         } else {
-            Alert.alert("Erro ao tentar bloquear site!!");
+            Alert.alert('Erro', 'Nenhuma resposta do servidor. Tente novamente.');
         }
     } catch (error) {
         throw new Error("Erro de rede: Network Request Failed");
@@ -92,12 +138,24 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
 }
 
 export const createGroup = async function(group: string) {
+    const correlationId = uuidv4();
+    const connectionId = getConnectionId();
+
+    if(!connectionId){
+        Alert.alert('Erro', 'WebSocket não conectado. Tente novamente mais tarde.');
+        return;
+    }
+
+    const responsePromise = waitForResponse(correlationId);
+
     const novoGrupo = {
-        'group-name': group
+        'group-name': group,
+        'correlationId': correlationId,
+        'connectionId': connectionId
     }
 
     try {
-        const response = await fetch("https://dm9ou0bjk6.execute-api.us-east-2.amazonaws.com/criarGrupo", {
+        const response = await fetch("https://dm9ou0bjk6.execute-api.us-east-2.amazonaws.com/criarGrupo/", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -107,37 +165,56 @@ export const createGroup = async function(group: string) {
 
         console.log(response)
 
-        if(response.ok){
-            const resposta = await response.json()
-
-            if(resposta){
-                const data = JSON.parse(resposta.body);
-
-                console.error(data['status'])
-                if(data['status'] === 'ok'){
-                    return data['message']
-                }else if(data['status'] === 'erro'){
-                    Alert.alert('Erro', data['Error'])
-                }else {
-                    Alert.alert('Erro', data['Exist'])
-                }
-            }
-        } else {
-            Alert.alert("Erro", "Erro ao criar grupo!!");
+        if(response){
+            Alert.alert('Requisição enviada, aguardando resposta...');
         }
+
+        if(!response.ok){
+            Alert.alert("Erro", "Erro ao criar grupo!!");
+            return;
+        }
+
+        const data = await responsePromise;
+
+        if(data){
+
+            if(data['status'] === 'ok'){
+                return data['message']
+            } else if(data['status'] === 'erro'){
+                Alert.alert('Erro', data['message']);
+            } else {
+                Alert.alert('Existe', data['message']);
+            }
+
+        } else {
+            Alert.alert('Erro', 'Nenhuma resposta do servidor. Tente novamente.');
+        }
+
     } catch(error) {
         throw new Error("Erro de rede: Network Request Failed");
     }
 }
 
 export const addClient = async function(address: string, group: string) {
+    const correlationId = uuidv4();
+    const connectionId = getConnectionId();
+
+    if(!connectionId){
+        Alert.alert('Erro', 'WebSocket não conectado. Tente novamente mais tarde.');
+        return;
+    }
+    
+    const responsePromise = waitForResponse(correlationId);
+    
     const novoCliente = {
         'client_address': address,
-        'group_name': group
+        'group_name': group,
+        'correlationId': correlationId,
+        'connectionId': connectionId
     }
 
     try{
-        const response = await fetch("http://192.168.0.21:8000/add_client", {
+        const response = await fetch("https://wc3wu8hwlg.execute-api.us-east-2.amazonaws.com/addCliente/", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -145,19 +222,30 @@ export const addClient = async function(address: string, group: string) {
             body: JSON.stringify(novoCliente)
         });
 
-        if(response.ok){
-            const resposta = await response.json()
-
-            if(resposta){
-                if(resposta['status'] === 'ok'){
-                    return resposta['message']
-                }else{
-                    Alert.alert('Erro', resposta['Error'])
-                }
-            }
-        } else {
-            Alert.alert('Erro',"Erro ao criar grupo!!");
+    
+        if(response){
+            Alert.alert('Requisição enviada, aguardando resposta...');
         }
+
+        if(!response.ok){
+            Alert.alert("Erro", "Erro ao adicionar cliente!!");
+            return;
+        }
+
+        const data = await responsePromise;
+
+        if(data){
+
+            if(data['status'] === 'ok'){
+                return data['message']
+            } else {
+                Alert.alert('Erro', data['message']);
+            } 
+
+        } else {
+            Alert.alert('Erro', 'Nenhuma resposta do servidor. Tente novamente.');
+        }
+
     }catch(error){
         //console.error(JSON.stringify(error));
         throw new Error("Erro de rede: Network Request Failed");
@@ -172,13 +260,25 @@ export const addClient = async function(address: string, group: string) {
 */
 
 export const deleteClient = async function(client_address: string, group_name: string) {
+    const correlationId = uuidv4();
+    const connectionId = getConnectionId();
+
+    if(!connectionId){
+        Alert.alert('Erro', 'WebSocket não conectado. Tente novamente mais tarde.');
+        return;
+    }
+
+    const responsePromise = waitForResponse(correlationId);
+
     const deletaCliente = {
         "client_address": client_address,
-        "group_name": group_name
+        "group_name": group_name,
+        'correlationId': correlationId,
+        'connectionId': connectionId
     }
 
     try{
-        const response = await fetch("http://192.168.0.21:8000/delete_client", {
+        const response = await fetch("https://3ci7g5p28j.execute-api.us-east-2.amazonaws.com/deletarCliente", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -186,32 +286,55 @@ export const deleteClient = async function(client_address: string, group_name: s
             body: JSON.stringify(deletaCliente)
         });
 
-        if(response.ok){
-            const resposta = await response.json()
-
-            if(resposta){
-                if(resposta['status'] === 'ok'){
-                    return resposta['message']
-                } else {
-                    Alert.alert('Erro', resposta['Error'])
-                }
-            } 
-        } else {
-            Alert.alert("Erro" ,"Erro ao criar grupo!!");
+        if(response){
+            Alert.alert('Requisição enviada, aguardando resposta...');
         }
+
+        if(!response.ok){
+            Alert.alert("Erro", "Erro ao adicionar cliente!!");
+            return;
+        }
+
+
+        const data = await responsePromise;
+
+        if(data){
+
+            if(data['status'] === 'ok'){
+                return data['message']
+            } else {
+                Alert.alert('Erro', data['message']);
+            } 
+
+        } else {
+            Alert.alert('Erro', 'Nenhuma resposta do servidor. Tente novamente.');
+        }
+
     } catch(error){
         throw new Error("Erro de rede: Network Request Failed");
     }
 }
 
 export const deleteGroup = async function(grupo: string, macAddress: string[]) {
+    const correlationId = uuidv4();
+    const connectionId = getConnectionId();
+
+    if(!connectionId){
+        Alert.alert('Erro', 'WebSocket não conectado. Tente novamente mais tarde.');
+        return;
+    }
+
+    const responsePromise = waitForResponse(correlationId);
+
     const deletaGrupo = {
         "group_name": grupo,
-        "macAddress": macAddress
+        "macAddress": macAddress,
+        'correlationId': correlationId,
+        'connectionId': connectionId
     }
 
     try{
-        const response = await fetch("http://192.168.0.21:8000/delete_group", {
+        const response = await fetch("https://kob15ojcu3.execute-api.us-east-2.amazonaws.com/deletarGrupo", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -219,20 +342,30 @@ export const deleteGroup = async function(grupo: string, macAddress: string[]) {
             body: JSON.stringify(deletaGrupo)
         });
 
-        if(response.ok){
-            const resposta = await response.json()
-
-            if(resposta) {
-                if(resposta['status'] === 'ok'){
-                    return resposta['message']
-                }else{
-                    Alert.alert('Erro', resposta['Error'])
-                    //console.error('erro')
-                }
-            }
-        } else {
-            Alert.alert("Erro", "Erro ao deletar grupo!!");
+        if(response){
+            Alert.alert('Requisição enviada, aguardando resposta...');
         }
+
+        if(!response.ok){
+            Alert.alert("Erro", "Erro ao adicionar cliente!!");
+            return;
+        }
+
+
+        const data = await responsePromise;
+
+        if(data){
+
+            if(data['status'] === 'ok'){
+                return data['message']
+            } else {
+                Alert.alert('Erro', data['message']);
+            } 
+
+        } else {
+            Alert.alert('Erro', 'Nenhuma resposta do servidor. Tente novamente.');
+        }
+
     } catch(error) {
         throw new Error("Erro de rede: Network Request Failed");
     }

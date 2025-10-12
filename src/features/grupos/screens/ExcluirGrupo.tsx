@@ -43,9 +43,11 @@ export default function ExcluirGrupo(){
     {text: 'Sim', onPress: async() => {
     try{ 
       const dispositivosSalvos = carregarDispositivos(grupo)
+      Alert.alert(dispositivosSalvos ? "Dispositivos encontrados" : "Nenhum dispositivo encontrado")
 
       if(dispositivosSalvos) {
         const dispositivoMac = dispositivosSalvos.map(d => d.mac)
+        Alert.alert(dispositivoMac ? "Macs encontrados" : "Nenhum mac encontrado")
 
         const response = await deleteGroup(grupo, dispositivoMac)
 
@@ -65,8 +67,12 @@ export default function ExcluirGrupo(){
        
       }
     }catch(error){
-      //console.error(error)
-      Alert.alert("Não foi possível remover!!")
+      console.error("Erro ao excluir grupo:", error);
+      if (error instanceof Error) {
+        Alert.alert("Não foi possível remover!!", error.message);
+      } else {
+        Alert.alert("Não foi possível remover!!", "Erro desconhecido");
+      }
     }
   }},
   {text: 'Não', onPress: () => navigation.replace('Tabs', {screen: 'AdicionarGrupos'})}], {cancelable:false})  

@@ -9,7 +9,7 @@ import Tela_Explicacao from "../features/explicacao/screens/TelaExplicacao";
 import CadastrarGrupos from "../features/grupos/screens/CadastrarGrupos";
 import AdicionarDispositivos from '../features/dispositivos/screens/AdicionarDispositivos';
 import ExcluirGrupo from '../features/grupos/screens/ExcluirGrupo';
-import Desbloquear from "../features/sites/screens/Desbloqueio";
+import Desbloquear from "../features/sites/screens/ListaDeBloqueio";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Rotas(){
