@@ -7,7 +7,8 @@ export type RootStackParamList = {
     Tela_Explicacao: undefined,
     Cadastrar_Grupo: undefined,
     Adicionar_Dispositivo: {nomeGrupo: string},
-    Desbloquear_Sites: undefined,
+    Desbloquear_Sites: {nomeGrupo: string},
+    Lista_De_Bloqueio: undefined,
     Excluir_Grupo: undefined,
     Tabs: { screen: keyof TabsParamList };
 }
@@ -37,3 +38,12 @@ export type Dispositivo = {
 export type Registro = {
     domain: string;
 };
+
+export type GrupoSites = {
+    sitesBloqueados: string[];
+    quantidade: number;
+}
+
+export type GruposSitesBloqueados = {
+    [key: string]: GrupoSites;
+}

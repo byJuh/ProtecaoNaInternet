@@ -10,6 +10,7 @@ import pegandoRegistros from "../services/useCarregarListaDeSites";
 import { addDomainBlocklist } from "../../../services/requests";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { salvarSitesBloqueados } from "../../sites/services/salvarSitesBloqueados";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
@@ -98,8 +99,18 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
       if(response) {
         Alert.alert(response)
 
-        //salvo no MMKV
+        try {
+
+          salvarSitesBloqueados(grupoSelecionado, selectedValues);
+
+        } catch (error) {
+          Alert.alert("Erro ao salvar sites bloqueados localmente.");
+        }
       }
+    }
+
+    const listaDeBloqueio = () => {
+      navigation.navigate('Lista_De_Bloqueio');
     }
     
     return(
@@ -157,11 +168,11 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
 
             <TouchableOpacity 
               style={[styles.btn, {marginTop: '10%', backgroundColor: '#2F4156', height: '8%', marginLeft: '2%'}]} 
-              onPress={() =>  navigation.navigate('Desbloquear_Sites')}
+              onPress={() =>  listaDeBloqueio()}
               accessibilityRole="button"
             >
-              <Text style={styles.btnTexto}>
-                Desbloquear
+              <Text style={[styles.btnTexto, {fontSize: 20}]}>
+                Lista de Bloqueio
               </Text>
             </TouchableOpacity>
 

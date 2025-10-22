@@ -1,9 +1,8 @@
 import React, { act } from "react";
-import { carregarDispositivos, carregarGrupos, deletarDispositivo, salvarDispositivos } from "../../../services/salvarDispostivos";
-import { addClient, createGroup } from "../../../services/requests";
+import { carregarDispositivos, deletarDispositivo, salvarDispositivos } from "../../../services/salvarDispostivos";
+import { addClient } from "../../../services/requests";
 import { fireEvent, render, waitFor } from "@testing-library/react-native";
 import { Alert } from "react-native";
-import CadastrarGrupos from "../../grupos/screens/CadastrarGrupos";
 import Cadastro_cliente from "./CadastrarCliente";
 import { RouteProp } from "@react-navigation/native";
 import { Dispositivo, RootStackParamList } from "../../../utils/types";

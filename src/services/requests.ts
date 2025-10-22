@@ -6,13 +6,15 @@ import {  getConnectionId, waitForResponse } from "../webSockets";
 /**GET /get_registro - Retorna registros de consultas para um domínio específico
                        (Recebe: domain-name, length)
 */
+let primeiraVez = true;
 
 export const getRegistro = async function (macAddress: string, signal: AbortSignal): Promise<Registro[]>{
     const correlationId = uuidv4();
     const connectionId = getConnectionId();
 
-    if(!connectionId){
+    if(!connectionId && !primeiraVez){
         Alert.alert('Erro', 'WebSocket não conectado. Tente novamente mais tarde.');
+        primeiraVez = false;
         return [];
     }
 
@@ -76,6 +78,9 @@ export const getRegistro = async function (macAddress: string, signal: AbortSign
 /**POST /add_domain_blocklist - Adiciona um domínio à lista de bloqueios de um grupo
                                 (Recebe: domain-name, group-name)
 
+POST /add_client - Adiciona um cliente a um grupo existente
+                   (Recebe: client_address, group_name)
+
 POST /create_group - Cria um novo grupo no Pi-hole
                      (Recebe: group-name)
 
@@ -129,6 +134,61 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
                 Alert.alert('Erro', data['message']);
             } 
 
+        } else {
+            Alert.alert('Erro', 'Nenhuma resposta do servidor. Tente novamente.');
+        }
+    } catch (error) {
+        throw new Error("Erro de rede: Network Request Failed");
+    }
+}
+
+export const unblockDomain = async function(domain: string, group: string) {
+    const correlationId = uuidv4();
+    const connectionId = getConnectionId();
+
+    if(!connectionId){
+        Alert.alert('Erro', 'WebSocket não conectado. Tente novamente mais tarde.');
+        return;
+    }
+
+    const responsePromise = waitForResponse(correlationId);
+
+    const dominioParaDesbloquear = {
+        "domain-name": domain,
+        "group-name": group,
+        'correlationId': correlationId,
+        'connectionId': connectionId
+    }
+
+    try {
+
+        const response = await fetch("https://b6hyiw7na6.execute-api.us-east-2.amazonaws.com/removerBloqueio", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dominioParaDesbloquear)
+        });
+
+        if(response){
+            Alert.alert('Requisição enviada, aguardando resposta...');
+        }
+
+        if(!response.ok){
+            Alert.alert("Erro", "Erro ao desbloquear site!!");
+            return;
+        }
+
+        const data = await responsePromise;
+
+        if(data){
+
+            if(data['status'] === 'ok'){
+                return data['message']
+            }
+            else {
+                Alert.alert('Erro', data['message']);
+            }
         } else {
             Alert.alert('Erro', 'Nenhuma resposta do servidor. Tente novamente.');
         }

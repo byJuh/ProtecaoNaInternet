@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AdicionarGrupos from "./AdicionarGrupos";
-import Bloquear from "../../sites/screens/TelaBloqueioSites";
+import Bloquear from "./TelaBloqueioSites";
 import { TouchableOpacity } from "react-native";
 
 const Tab = createBottomTabNavigator();

@@ -10,6 +10,7 @@ import CadastrarGrupos from "../features/grupos/screens/CadastrarGrupos";
 import AdicionarDispositivos from '../features/dispositivos/screens/AdicionarDispositivos';
 import ExcluirGrupo from '../features/grupos/screens/ExcluirGrupo';
 import Desbloquear from "../features/sites/screens/ListaDeBloqueio";
+import Desbloquear_Sites from "../features/sites/screens/DesbloqueioSites";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Rotas(){
@@ -52,6 +53,11 @@ export default function Rotas(){
             />
             <Stack.Screen
                 name = 'Desbloquear_Sites'
+                component={Desbloquear_Sites}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name = 'Lista_De_Bloqueio'
                 component={Desbloquear}
                 options={{headerShown: false}}
             />
