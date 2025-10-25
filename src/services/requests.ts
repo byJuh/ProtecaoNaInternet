@@ -41,7 +41,7 @@ export const getRegistro = async function (macAddress: string, signal: AbortSign
         }
 
         if(!response.ok){
-            Alert.alert("Erro", "Erro ao criar grupo!!");
+            Alert.alert("Erro", "Erro ao tentar pegar os sites!!");
             return [];
         }
 
@@ -120,7 +120,7 @@ export const addDomainBlocklist = async function(domain: string, group: string) 
         }
 
         if(!response.ok){
-            Alert.alert("Erro", "Erro ao criar grupo!!");
+            Alert.alert("Erro", "Erro ao tentar bloquear site!!");
             return;
         }
 
@@ -407,7 +407,7 @@ export const deleteGroup = async function(grupo: string, macAddress: string[]) {
         }
 
         if(!response.ok){
-            Alert.alert("Erro", "Erro ao adicionar cliente!!");
+            Alert.alert("Erro", "Erro ao deletar grupo!!");
             return;
         }
 

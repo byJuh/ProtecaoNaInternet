@@ -1,6 +1,8 @@
 import { Alert } from "react-native";
 import { addClient, addDomainBlocklist, createGroup, deleteClient, deleteGroup, getRegistro } from "./requests";
-/* Adicionar o que é novo e os erros que tem!! */
+import { v4 as uuidv4 } from "uuid";
+import { getConnectionId, waitForResponse } from "../webSockets";
+import { mock } from "node:test";
 
 const mockSignal = {
     aborted: false,
@@ -9,28 +11,64 @@ const mockSignal = {
     onabort: null,
 } as unknown as AbortSignal
 
+jest.mock("react-native", () => ({
+  Alert: { alert: jest.fn() },
+}));
+
+jest.mock("uuid", () => ({
+  v4: jest.fn(() => "mocked-uuid"),
+}));
+
+jest.mock("../webSockets", () => ({
+  getConnectionId: jest.fn(),
+  waitForResponse: jest.fn(),
+}));
+
+const mockedWaitForResponse = waitForResponse as jest.MockedFunction<typeof waitForResponse>;
+const mockedGetConnectionId = getConnectionId as jest.MockedFunction<typeof getConnectionId>;
+const mockedAlert = Alert.alert as jest.MockedFunction<typeof Alert.alert>;
+
 describe('Testando request de queries do Pi Hole', () => {
     
     beforeEach(() => {
         jest.clearAllMocks();
+        mockedGetConnectionId.mockReturnValue('mocked-connection-id');
+        global.fetch = jest.fn()
         jest.spyOn(Alert, 'alert');
     });
 
     //Confirmar se eh assim mesmo que devolve
     it('Pegando registro de sites', async () => {
-        const mockData = ['www.google.com.br', 'www.uol.com.br', 'www.terra.com.br', 'www.youtube.com.br']
+        const mockData = ['www.google.com.br', 'www.uol.com.br', 'www.terra.com.br', 'www.youtube.com.br'];
 
-        global.fetch = jest.fn().mockResolvedValue({
+        (global.fetch as jest.Mock).mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve(mockData),
+            json: () => Promise.resolve({}),
             signal: mockSignal
         });
 
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: mockData,
+            status: "ok"
+        })
+
         const response = await getRegistro('FF:FF:FF:FF:FF:FF', mockSignal);
+        
+        expect(global.fetch).toHaveBeenCalled();
+        expect(Alert.alert).toHaveBeenCalledWith('Requisição enviada, aguardando resposta...');
+
+        expect(uuidv4).toHaveBeenCalled();
+        expect(getConnectionId).toHaveBeenCalled();
+        expect(waitForResponse).toHaveBeenCalledWith("mocked-uuid");
+
+
         expect(response).toEqual(mockData);
     });
 
     it('Lidando com erros', async () => {
+        mockedWaitForResponse.mockClear();
+        
         const erro = {
             error: "Nao foi possivel pegar os registros",
             status: "error"
@@ -42,10 +80,17 @@ describe('Testando request de queries do Pi Hole', () => {
             signal: mockSignal
         });
 
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: "Não foram encontradas consultas para o domínio fornecido",
+            status: "erro"
+        });
+
         const response = await getRegistro('FF:FF:FF:FF:FF:FF',  mockSignal);
         expect(response).toEqual([]);
 
-        expect(Alert.alert).toHaveBeenCalledWith("Erro", "Nao foi possivel pegar os registros");
+        expect(Alert.alert).toHaveBeenCalledWith("Requisição enviada, aguardando resposta...");
+        expect(Alert.alert).toHaveBeenCalledWith("Erro", "Não foram encontradas consultas para o domínio fornecido");
 
     });
 
@@ -64,10 +109,17 @@ describe('Testando request de queries do Pi Hole', () => {
             signal: mockSignal
         });
 
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: [],
+            status: "ok"
+        });
+
         const response = await getRegistro('FF:FF:FF:FF:FF:FF',  mockSignal);
         expect(response).toEqual([]);
 
-        expect(Alert.alert).toHaveBeenCalledWith("Nenhum domínio encontrado");
+        expect(Alert.alert).toHaveBeenCalledWith("Requisição enviada, aguardando resposta...");
+        expect(Alert.alert).toHaveBeenCalledWith("Nenhum registro encontrado");
         
     });
 
@@ -80,6 +132,18 @@ describe('Testando request de queries do Pi Hole', () => {
         expect(response).toEqual([]);
 
         expect(Alert.alert).toHaveBeenCalledWith("Erro", "Erro ao tentar pegar os sites!!");
+        
+    });
+
+    it('Lidando com erro no fetch, resposta.ok valida', async () => {
+        global.fetch = jest.fn().mockResolvedValue({
+            ok: true,
+        });
+        
+        const response = await getRegistro('FF:FF:FF:FF:FF:FF', mockSignal);
+        expect(response).toEqual([]);
+
+        expect(Alert.alert).toHaveBeenCalledWith('Requisição enviada, aguardando resposta...');
         
     });
 
@@ -105,11 +169,26 @@ describe('Testando request de adicionar dominio no Pi Hole', () => {
 
         global.fetch = jest.fn().mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve(mockData)
+            json: () => Promise.resolve({})
+        });
+
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: mockData,
+            status: "ok"
         });
 
         const response = await addDomainBlocklist('www.uol.com.br', 'NovoGrupo');
-        expect(response).toEqual(mockData['message']);
+        
+        expect(global.fetch).toHaveBeenCalled();
+        expect(Alert.alert).toHaveBeenCalledWith('Requisição enviada, aguardando resposta...');
+
+        expect(uuidv4).toHaveBeenCalled();
+        expect(getConnectionId).toHaveBeenCalled();
+        expect(waitForResponse).toHaveBeenCalledWith("mocked-uuid");
+
+
+        expect(response).toEqual(mockData);
 
     });
 
@@ -125,9 +204,16 @@ describe('Testando request de adicionar dominio no Pi Hole', () => {
             json: () => Promise.resolve(mockData)
         });
 
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: "Não foi possível bloquear",
+            status: "erro"
+        });
+
         const response = await addDomainBlocklist('www.uol.com.br', 'NovoGrupo');
         expect(response).toEqual(undefined);
 
+        expect(Alert.alert).toHaveBeenCalledWith("Requisição enviada, aguardando resposta...");
         expect(Alert.alert).toHaveBeenCalledWith('Erro', mockData['Error']);
     
     });
@@ -140,7 +226,7 @@ describe('Testando request de adicionar dominio no Pi Hole', () => {
         const response = await addDomainBlocklist('www.uol.com.br', 'NovoGrupo')
         expect(response).toEqual(undefined);
 
-        expect(Alert.alert).toHaveBeenCalledWith("Erro ao tentar bloquear site!!");
+        expect(Alert.alert).toHaveBeenCalledWith("Erro", "Erro ao tentar bloquear site!!");
     
     });
 
@@ -151,11 +237,6 @@ describe('Testando request de adicionar dominio no Pi Hole', () => {
             .rejects
             .toThrow("Erro de rede: Network Request Failed");
     });
-
-   
-    //addClient e erro
-    //deleteClient e erro
-    //deleteGroup e erro
 
 });
 
@@ -172,8 +253,22 @@ describe('Testando request de criar Grupo', () => {
             json: () => Promise.resolve(mockData)
         });
 
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: mockData,
+            status: "ok"
+        });
+
         const response = await createGroup('NovoGrupo');
-        expect(response).toEqual(mockData['message']);
+        expect(global.fetch).toHaveBeenCalled();
+        expect(Alert.alert).toHaveBeenCalledWith('Requisição enviada, aguardando resposta...');
+
+        expect(uuidv4).toHaveBeenCalled();
+        expect(getConnectionId).toHaveBeenCalled();
+        expect(waitForResponse).toHaveBeenCalledWith("mocked-uuid");
+
+
+        expect(response).toEqual(mockData);
     });
 
     it('Lidando com erros ao criar grupo', async () => {
@@ -187,27 +282,37 @@ describe('Testando request de criar Grupo', () => {
             json: () => Promise.resolve(mockData)
         });
 
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: "Não foi possivel criar o grupo NovoGrupo",
+            status: "erro"
+        });
+
         const response = await createGroup('NovoGrupo');
         expect(response).toEqual(undefined);
 
+        expect(Alert.alert).toHaveBeenCalledWith("Requisição enviada, aguardando resposta...");
         expect(Alert.alert).toHaveBeenCalledWith('Erro', mockData['Error']);
-    
     });
 
     it('Lidando com grupo repetido', async () => {
-         const mockData = {
-            Exist: 'O grupo NovoGrupo já existe!', 
-            status: "existe"
-        };
 
         global.fetch = jest.fn().mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve(mockData)
+            json: () => Promise.resolve({})
         });
 
-        await createGroup('NovoGrupo');
-        expect(Alert.alert).toHaveBeenCalledWith('Erro', mockData['Exist']);
-    
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: 'O grupo NovoGrupo já existe!',
+            status: "existe"
+        });
+
+        const response = await createGroup('NovoGrupo');
+        expect(response).toEqual(undefined);
+
+        expect(Alert.alert).toHaveBeenCalledWith("Requisição enviada, aguardando resposta...");
+        expect(Alert.alert).toHaveBeenCalledWith('Existe', 'O grupo NovoGrupo já existe!');
     });
 
     it('Lidando com response.ok invalido ao criar grupo', async () => {
@@ -241,28 +346,47 @@ describe('Testando request de adicionar cliente', () =>{
 
         global.fetch = jest.fn().mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve(mockData)
+            json: () => Promise.resolve({})
+        });
+
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: mockData,
+            status: "ok"
         });
 
         const response = await addClient('FF:FF:FF:FF:FF:FF', 'NovoGrupo');
-        expect(response).toEqual(mockData['message']);
+        expect(global.fetch).toHaveBeenCalled();
+        expect(Alert.alert).toHaveBeenCalledWith('Requisição enviada, aguardando resposta...');
+
+        expect(uuidv4).toHaveBeenCalled();
+        expect(getConnectionId).toHaveBeenCalled();
+        expect(waitForResponse).toHaveBeenCalledWith("mocked-uuid");
+
+
+        expect(response).toEqual(mockData);
     });
 
     it('Lidando com erro ao adicionar novo cliente', async () =>{
-        const mockData = {
-            Error: 'Não foi possivel inserir o cliente FF:FF:FF:FF:FF:FF no grupo NovoGrupo', 
-            status: "erro"
-        }
-
+     
         global.fetch = jest.fn().mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve(mockData)
+            json: () => Promise.resolve({})
+        });
+
+         mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: 'Não foi possivel inserir o cliente FF:FF:FF:FF:FF:FF no grupo NovoGrupo',
+            status: "erro"
         });
 
         const response = await addClient('FF:FF:FF:FF:FF:FF', 'NovoGrupo');
         expect(response).toEqual(undefined);
 
-        expect(Alert.alert).toHaveBeenCalledWith('Erro', mockData['Error']);
+        expect(global.fetch).toHaveBeenCalled();
+
+        expect(Alert.alert).toHaveBeenCalledWith("Requisição enviada, aguardando resposta...");
+        expect(Alert.alert).toHaveBeenCalledWith('Erro', 'Não foi possivel inserir o cliente FF:FF:FF:FF:FF:FF no grupo NovoGrupo');
     
     });
 
@@ -296,28 +420,44 @@ describe('Testando request de deletar cliente', () => {
 
         global.fetch = jest.fn().mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve(mockData)
+            json: () => Promise.resolve({})
         });
+
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: 'Cliente FF:FF:FF:FF:FF:FF foi removido',
+            status: "ok"
+        });
+
 
         const response = await deleteClient('FF:FF:FF:FF:FF:FF', 'NovoGrupo');
         expect(response).toEqual(mockData['message']);
+
+        expect(global.fetch).toHaveBeenCalled();
+
+        expect(Alert.alert).toHaveBeenCalledWith("Requisição enviada, aguardando resposta...");
     });
 
     it('Lidando com erro ao deletar cliente', async () => {
-        const mockData = {
-            Error: 'Não foi possivel remover o cliente FF:FF:FF:FF:FF:FF', 
-            status: "erro"
-        }
-
+    
         global.fetch = jest.fn().mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve(mockData)
+            json: () => Promise.resolve({})
+        });
+
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: 'Não foi possivel remover o cliente FF:FF:FF:FF:FF:FF',
+            status: "erro"
         });
 
         const response = await deleteClient('FF:FF:FF:FF:FF:FF', 'NovoGrupo');
         expect(response).toEqual(undefined)
 
-        expect(Alert.alert).toHaveBeenCalledWith('Erro', mockData['Error']);
+        expect(global.fetch).toHaveBeenCalled();
+
+        expect(Alert.alert).toHaveBeenCalledWith("Requisição enviada, aguardando resposta...");
+        expect(Alert.alert).toHaveBeenCalledWith('Erro', 'Não foi possivel remover o cliente FF:FF:FF:FF:FF:FF');
     
     });
 
@@ -345,43 +485,47 @@ describe('Testando request de deletar cliente', () => {
 describe('Testando request de deletar grupo', () => {
 
     it('Deletando grupo', async () => {
-        const mockData = {
-            message: 'Grupo NovoGrupo foi removido', 
-            status: "ok"
-        }
 
         global.fetch = jest.fn().mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve(mockData)
+            json: () => Promise.resolve({})
+        });
+
+        mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: 'Grupo NovoGrupo foi removido',
+            status: "ok"
         });
 
         const response = await deleteGroup('NovoGrupo', ['FF:FF:FF:FF:FF:FF', 'AA:AA:AA:AA:AA:AA']);
-        expect(response).toEqual(mockData['message']);
+        expect(response).toEqual("Grupo NovoGrupo foi removido");
 
         const response_macAddressVazio = await deleteGroup('NovoGrupo', []);
-        expect(response_macAddressVazio).toEqual(mockData['message']);
+        expect(response_macAddressVazio).toEqual("Grupo NovoGrupo foi removido");
     });
 
     it('Lidando com erro ao deletar grupo', async () => {
-        const mockData = {
-            Error: 'Não foi possivel remover grupo NovoGrupo', 
-            status: "erro"
-        }
 
         global.fetch = jest.fn().mockResolvedValue({
             ok: true,
-            json: () => Promise.resolve(mockData)
+            json: () => Promise.resolve({})
+        });
+
+         mockedWaitForResponse.mockResolvedValue({
+            correlationId: "mocked-uuid",
+            message: 'Não foi possivel remover grupo NovoGrupo',
+            status: "erro"
         });
 
         const response = await deleteGroup('NovoGrupo', ['FF:FF:FF:FF:FF:FF', 'AA:AA:AA:AA:AA:AA']);
         expect(response).toEqual(undefined);
 
-        expect(Alert.alert).toHaveBeenCalledWith('Erro', mockData['Error']);
+        expect(Alert.alert).toHaveBeenCalledWith('Erro', 'Não foi possivel remover grupo NovoGrupo');
 
         const response_macAddressVazio = await deleteGroup('NovoGrupo', []);
         expect(response_macAddressVazio).toEqual(undefined);
 
-        expect(Alert.alert).toHaveBeenCalledWith('Erro', mockData['Error']);
+        expect(Alert.alert).toHaveBeenCalledWith('Erro', 'Não foi possivel remover grupo NovoGrupo');
     
     });
 

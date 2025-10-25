@@ -12,15 +12,25 @@ import { addDomainBlocklist } from '../../../services/requests';
 jest.mock('react-native-picker-select', () => 'RNPickerSelect');
 jest.mock('react-native-bouncy-checkbox', () => 'BouncyCheckbox');
 jest.mock("react-native-mmkv-storage");
-jest.mock('../../services/useCarregarGrupos');
-jest.mock('../../services/useCarregarDispositivosMacAddress');
-jest.mock('../../services/useCarregarListaDeSites');
-jest.mock('../../services/requests', () => ({
+jest.mock('../services/useCarregarGrupos');
+jest.mock('../services/useCarregarDispositivosMacAddress');
+jest.mock('../services/useCarregarListaDeSites');
+jest.mock('../../../services/requests', () => ({
     addDomainBlocklist: jest.fn(),
 }));
-jest.mock('@react-navigation/native', () => ({
-  useFocusEffect: jest.fn(),
-}));
+
+const mockNavigate = jest.fn();
+
+jest.mock('@react-navigation/native', () => {
+  const actualNav = jest.requireActual('@react-navigation/native');
+  return {
+    ...actualNav,
+    useFocusEffect: jest.fn((callback) => callback()),
+    useNavigation: () => ({
+      navigate: mockNavigate, // usa a variável externa
+    }),
+  };
+});
 
 describe('Testando tela bloquear', ()=> {
 
@@ -36,8 +46,14 @@ describe('Testando tela bloquear', ()=> {
         const button = getByRole('button', {name: 'Bloquear'});
         expect(button).toBeTruthy();
 
+        const buttonDesbloquear = getByRole('button', {name: 'Lista de Bloqueio'});
+        expect(buttonDesbloquear).toBeTruthy();
+
         const buttonText = getByText('Bloquear');
         expect(buttonText).toBeTruthy();
+
+        const buttonTextDesbloqueio = getByText('Lista de Bloqueio');
+        expect(buttonTextDesbloqueio).toBeTruthy();
     });
 
     it('renderizando a tela após escolher grupo', () => {
@@ -65,6 +81,13 @@ describe('Testando tela bloquear', ()=> {
 
         const buttonText = getByText('Bloquear');
         expect(buttonText).toBeTruthy();
+
+        const buttonDesbloquear = getByRole('button', {name: 'Lista de Bloqueio'});
+        expect(buttonDesbloquear).toBeTruthy();
+
+        const buttonTextDesbloqueio = getByText('Lista de Bloqueio');
+        expect(buttonTextDesbloqueio).toBeTruthy();
+        
     });
 });
 
@@ -162,5 +185,13 @@ describe('Testando o funcionamento da tela de bloqueio', () => {
         
         const buttonText = getByText('Bloquear');
         expect(buttonText).toBeTruthy();
+
+        const buttonDesbloquear = getByRole('button', {name: 'Lista de Bloqueio'});
+        fireEvent.press(buttonDesbloquear);
+
+        expect(mockNavigate).toHaveBeenCalledWith('Lista_De_Bloqueio')
+
+        const buttonTextDesbloqueio = getByText('Lista de Bloqueio');
+        expect(buttonTextDesbloqueio).toBeTruthy();
     });
 });

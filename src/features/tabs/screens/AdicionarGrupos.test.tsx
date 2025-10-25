@@ -5,7 +5,7 @@ import { fireEvent, render, within } from "@testing-library/react-native";
 
 jest.mock("react-native-mmkv-storage");
 jest.mock('@react-navigation/native-stack');
-jest.mock('../../services/useCarregarGruposEQtd');
+jest.mock('../services/useCarregarGruposEQtd');
 
 const mockNavigate = jest.fn();
 jest.mock('@react-navigation/native', () => ({
