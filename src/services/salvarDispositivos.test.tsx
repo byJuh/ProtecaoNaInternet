@@ -304,5 +304,4 @@ describe('Testes de armazenamento de dispositivos', () => {
         });
     });
 
-    //FAZER OS TESTES DE ERROS!!
 });

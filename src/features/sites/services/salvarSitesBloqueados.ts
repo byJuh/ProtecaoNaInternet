@@ -14,8 +14,14 @@ export function salvarSitesBloqueados(grupo: string, sites: string){
         if(grupos[grupo]) {
             // Se o grupo existe, ACRESCENTA os novos sites aos existentes
             const sitesExistentes = grupos[grupo].sitesBloqueados;
+
+            if(sitesExistentes.includes(sites)){
+                Alert.alert("Site já existe no grupo", `O site ${sites} já está bloqueado no grupo ${grupo}.`);
+                return;
+            }
+
             const sitesAtualizados = Array.from(new Set([...sitesExistentes, sites]));
-            
+
             grupos[grupo] = { 
                 sitesBloqueados: sitesAtualizados, 
                 quantidade: sitesAtualizados.length
@@ -57,23 +63,6 @@ export function carregarGruposComQuantidadesDeSitesBloqueados(): Map<string, num
         return resultadosMap
     }catch(error){
         throw new Error("Erro ao carregar grupos e quantidade de sites bloqueados.");
-    }
-}
-
-export function deletarSitesBloqueados(grupo: string) {
-    try{
-       const sitesBloqueadosSalvos = MMKV.getString('gruposSitesBloqueados');
-       
-       const sitesBloqueados: GruposSitesBloqueados = sitesBloqueadosSalvos ? JSON.parse(sitesBloqueadosSalvos) : {};
-
-        if(sitesBloqueados[grupo]){
-            delete sitesBloqueados[grupo];
-
-            MMKV.setString('gruposSitesBloqueados', JSON.stringify(sitesBloqueados));
-        }
-       
-    } catch(error){
-        throw new Error("Erro ao deletar sites bloqueados do grupo.");
     }
 }
 

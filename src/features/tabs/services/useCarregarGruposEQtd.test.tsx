@@ -39,4 +39,14 @@ describe('Testando getGruposQtdDispositivos', () => {
         expect(carregarGrupos).toHaveBeenCalled();
         expect(mockSetGrupos).not.toHaveBeenCalled();
     });
+
+    it('Não definindo grupos quando nenhum grupo é retornado', () => {
+        (carregarGrupos as jest.Mock).mockReturnValue(undefined);
+
+        getGruposQtdDispositivos(mockSetGrupos);
+
+        expect(carregarGrupos).toHaveBeenCalled();
+        expect(mockSetGrupos).not.toHaveBeenCalled();
+    });
+
 })
