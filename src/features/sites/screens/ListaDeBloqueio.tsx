@@ -25,7 +25,7 @@ export default function ListaDeGruposComSites(){
                accessibilityRole="button"
            >
                <Text style={{ fontWeight: 'bold', fontSize: 22}}>{item[0]}</Text>
-               <Text style={{ fontSize: 20}}>{'\t\t'} quantidade: {item[1]}</Text>
+               <Text style={{ fontSize: 20}}>{'\t\t'} sites bloqueados: {item[1]}</Text>
            </TouchableOpacity>
        );
    
@@ -38,7 +38,7 @@ export default function ListaDeGruposComSites(){
                            data={grupos}
                            renderItem={renderItem}
                            keyExtractor={([nome]) => nome}
-                           ListEmptyComponent={<Text>Nenhum dispositivo cadastrado.</Text>}
+                           ListEmptyComponent={<Text>Nenhum site bloqueado.</Text>}
                        />
                    </SafeAreaView>
                </View>

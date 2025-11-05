@@ -52,7 +52,7 @@ export default function Desbloquear_Sites({ route } : {route: RouteProps}){
     <View style = {[styles.container, {backgroundColor: '#C8D9E6'}]}>
       <View testID="picker-dispositivo" style = {styles.select}>
         <RNPickerSelect 
-          placeholder={{ label: 'Selecione um dispositivo', value: null }}
+          placeholder={{ label: 'Selecione um site', value: null }}
           items={sites.map(d => ({
             label: `${d}`, 
             value: d

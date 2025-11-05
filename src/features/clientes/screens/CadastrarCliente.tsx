@@ -25,19 +25,7 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
 
   //REVER
   const formatMacAddress = (macAddress: string) => {
-      /*if (!macAddress || macAddress.trim() === "") {
-        return null;
-      }
 
-      let macAddressFormatted = macAddress.toUpperCase()
-
-      //removendo todos os caracteres que não sejam hexadecimais, deixando apenas os válidos
-      macAddressFormatted = macAddressFormatted.replace(/[^a-fA-F0-9]/g, '');
-
-      if(macAddressFormatted.length != 12) return null
-      else return macAddressFormatted.match(/.{1,2}/g)?.join(":") ?? '';
-    */
-    
       //ERRO AQUI, VERIFICAR -> MENOS QUE 12 CARACTERES FUNCIONA, NAO DEVERIA
       const macAddressFormated = macAddress.toUpperCase().replace(/[^a-fA-F0-9]/g, '').match(/.{1,2}/g)?.join(":") ?? '';
       setMacAddress(macAddressFormated);
@@ -48,15 +36,6 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
         Alert.alert("Preencha todos os campos!");
         return;
     }
-
-    //regex para formato MacAddress, verificando se ja esta no formato
-    //NAO PRECISA MAIS!!!
-    //var regex = new RegExp(/^(?:[0-9A-Fa-f]{2}[:-]){5}(?:[0-9A-Fa-f]{2})$/)
-
-    //if(!(macAddress.match(regex)) && !(macAddress.length == 17))  {
-    //    Alert.alert("MAC inválido!");
-    //    return;
-    //} 
 
     try{
       const dispositivos = carregarDispositivos(nomeGrupo)
@@ -96,7 +75,6 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
     }catch (error){
       if(error instanceof Error) {
         Alert.alert("Erro", error.message);
-        //deletarDispositivo(nomeDispositivo, macAddress, nomeGrupo);
       }
     }
 

@@ -28,12 +28,12 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
 
     //Select com os grupos, pegando os grupos. Se tiver só um, seleciona direto o grupo
     useEffect(() => {
-      fetchGrupos(setGrupos, setGruposSelecionados);
+      fetchGrupos(setGrupos);
     }, []) 
     
     //Select com os dispositivos. Se tiver só um, seleciona direto o dispostivo, salvando o mac
     useEffect(() => {
-        fetchDispositivos(grupoSelecionado, setMacAddress, setDispositivos);
+        fetchDispositivos(grupoSelecionado, setDispositivos);
       }, [grupoSelecionado])
         
     //rodar daqui 4 min

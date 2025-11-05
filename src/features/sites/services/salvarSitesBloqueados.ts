@@ -1,6 +1,6 @@
 import { Alert } from 'react-native';
 import { MMKV } from '../../../utils/inicializarMMKV';
-import { Grupo, GrupoSites, GruposSitesBloqueados } from '../../../utils/types';
+import { GruposSitesBloqueados } from '../../../utils/types';
 
 export function salvarSitesBloqueados(grupo: string, sites: string){
     try{
@@ -8,8 +8,8 @@ export function salvarSitesBloqueados(grupo: string, sites: string){
         
         let grupos: GruposSitesBloqueados = gruposSalvos ? JSON.parse(gruposSalvos) : {};
 
-        Alert.alert("Salvar site bloqueado", `Grupo: ${grupo} - Site: ${sites}`);
-        Alert.alert("Grupos atuais", JSON.stringify(grupos));
+        // Alert.alert("Salvar site bloqueado", `Grupo: ${grupo} - Site: ${sites}`);
+        // Alert.alert("Grupos atuais", JSON.stringify(grupos));
     
         if(grupos[grupo]) {
             // Se o grupo existe, ACRESCENTA os novos sites aos existentes

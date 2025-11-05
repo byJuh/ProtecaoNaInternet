@@ -2,7 +2,6 @@ import { Alert } from "react-native";
 import { addClient, addDomainBlocklist, createGroup, deleteClient, deleteGroup, getRegistro } from "./requests";
 import { v4 as uuidv4 } from "uuid";
 import { getConnectionId, waitForResponse } from "../webSockets";
-import { mock } from "node:test";
 
 const mockSignal = {
     aborted: false,
@@ -24,9 +23,8 @@ jest.mock("../webSockets", () => ({
   waitForResponse: jest.fn(),
 }));
 
-const mockedWaitForResponse = waitForResponse as jest.MockedFunction<typeof waitForResponse>;
-const mockedGetConnectionId = getConnectionId as jest.MockedFunction<typeof getConnectionId>;
-const mockedAlert = Alert.alert as jest.MockedFunction<typeof Alert.alert>;
+const mockedWaitForResponse = waitForResponse as jest.Mock;
+const mockedGetConnectionId = getConnectionId as jest.Mock;
 
 describe('Testando request de queries do Pi Hole', () => {
     
