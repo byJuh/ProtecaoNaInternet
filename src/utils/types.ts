@@ -10,6 +10,7 @@ export type RootStackParamList = {
     Desbloquear_Sites: {nomeGrupo: string},
     Lista_De_Bloqueio: undefined,
     Excluir_Grupo: undefined,
+    Tela_Como_Achar_Mac: undefined,
     Tabs: { screen: keyof TabsParamList };
 }
 

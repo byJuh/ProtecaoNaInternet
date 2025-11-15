@@ -28,6 +28,7 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
 
     //Select com os grupos, pegando os grupos. Se tiver só um, seleciona direto o grupo
     useEffect(() => {
+      setRegistros([]);
       fetchGrupos(setGrupos);
     }, []) 
     
@@ -58,10 +59,10 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
             controller.abort();
             
             //limpa os campos
-            setRegistros([]);
             setMacAddress("");
             setGruposSelecionados("");
             setSelectedValues("");
+            setRegistros([]);
           }
         }, [macAddress, grupoSelecionado])
     );
@@ -82,7 +83,7 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
             unFillColor="#FFFFFF"
             text={item.domain}
             innerIconStyle={{ borderWidth: 2 }}
-            onPress={() => pegandoValores (item.domain)}
+            onPress={() => pegandoValores(item.domain)}
             isChecked={selectedValues === item.domain}
           />
           <Text style={{fontWeight: 'bold', fontSize: 18}}>
@@ -93,7 +94,12 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
 
     //Serve para bloquear os sites
     const bloquearSites = async () => {
-      //console.error(selectedValues) 
+      
+      if(selectedValues === "") {
+        Alert.alert("Selecione um site para bloquear.");
+        return;
+      }
+
       const response = await addDomainBlocklist(selectedValues, grupoSelecionado)
 
       if(response) {
@@ -115,7 +121,7 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
     
     return(
       <SafeAreaView style={[styles.container, {backgroundColor: '#F5EFEB'}]}>
-        <View style = {[styles.select, {marginTop: 15, width: '50%', borderWidth: 2, borderColor: '#567C8D'}]}
+        <View style = {[styles.select, {marginTop: 15, width: '70%', borderWidth: 2, borderColor: '#567C8D'}]}
               testID="picker-groups"
         >
           <RNPickerSelect
@@ -126,17 +132,17 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
             onValueChange={(value) => setGruposSelecionados(value)} 
             value={grupoSelecionado}
             style={pickerSelectStylesBloquear}
-            placeholder={{ label: 'Grupos', value: null }}
+            placeholder={{ label: 'Selecione um Grupo', value: null }}
           />
         </View>
         {grupos && grupoSelecionado && (
-          <View style = {[styles.select, {marginTop: 15, width: '50%', borderWidth: 2, borderColor: '#567C8D'}]}
+          <View style = {[styles.select, {marginTop: 15, width: '70%', borderWidth: 2, borderColor: '#567C8D'}]}
                 testID="picker-dispositivos"
           >
             <RNPickerSelect 
-              placeholder={{ label: 'Dispositivos', value: null }}
+              placeholder={{ label: 'Selecione um Dispositivo', value: null }}
               items={dispositivos.map(d => ({
-                label: `${d.nome} (${d.mac})`, 
+                label: `${d.nome} (${d.mac})`,
                 value: d.mac 
               }))}
               onValueChange={(value) => setMacAddress(value)} 
@@ -151,15 +157,22 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
               testID="visualizacao-dominios"
               data={registros} 
               renderItem={renderItem}
-              ListEmptyComponent={<Text style={{fontSize: 20, alignSelf: "center"}}> Selecione um grupo e um dispositivo </Text>}              
+              ListEmptyComponent={
+                <Text style={{fontSize: 15, alignSelf: "center", textAlign: 'center', marginTop: '50%', marginLeft: 20, marginRight: 20}}> 
+                  Primeiro selecione um grupo e um dispositivo.{"\n"}
+                  Depois os sites acessados serão mostrados aqui {"\n"}
+                  Após isso, selecione o site que deseja bloquear.  {"\n\n"}
+                  Os sites acessados serão atualizados a cada 10 minutos.{"\n"}
+                </Text>}              
             />
           </SafeAreaView>
 
           <View style={{flexDirection: 'row', height: '100%'}}>
             <TouchableOpacity 
-              style={[styles.btn, {marginTop: '10%', backgroundColor: '#2F4156', height: '8%'}]} 
+              style={[styles.btn, {marginTop: '10%', backgroundColor: selectedValues === "" ? '#A9A9A9' : '#2F4156', height: '8%'}]} 
               onPress={() => bloquearSites()}
               accessibilityRole="button"
+              disabled={selectedValues === ""}
             >
               <Text style={styles.btnTexto}>
                 Bloquear
@@ -167,7 +180,7 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={[styles.btn, {marginTop: '10%', backgroundColor: '#2F4156', height: '8%', marginLeft: '2%'}]} 
+              style={[styles.btn, {marginTop: '10%', backgroundColor: '#2F4156' , height: '8%', marginLeft: '2%'}]} 
               onPress={() =>  listaDeBloqueio()}
               accessibilityRole="button"
             >

@@ -2,7 +2,6 @@ import React from "react";
 import getGruposComQuantidadesDeSitesBloqueados from "../services/getGruposComQtdSites";
 import ListaDeBloqueio from "./ListaDeBloqueio";
 import { fireEvent, render, within } from "@testing-library/react-native";
-import { mock } from "node:test";
 
 jest.mock("react-native-mmkv-storage");
 jest.mock('@react-navigation/native-stack');

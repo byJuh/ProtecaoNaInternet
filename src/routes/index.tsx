@@ -11,6 +11,7 @@ import AdicionarDispositivos from '../features/dispositivos/screens/AdicionarDis
 import ExcluirGrupo from '../features/grupos/screens/ExcluirGrupo';
 import Desbloquear from "../features/sites/screens/ListaDeBloqueio";
 import Desbloquear_Sites from "../features/sites/screens/DesbloqueioSites";
+import TelaComoAcharMacAddress from "../features/explicacao/screens/TelaComoAcharMacAddress";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Rotas(){
@@ -24,22 +25,46 @@ export default function Rotas(){
             <Stack.Screen
                 name = 'Cadastrar_Mac'
                 component={Cadastro_macAddress}
-                options={{headerShown: false}}
+                options={{
+                    title: 'Cadastrar Mac Address (Dispositivo)',
+                    headerShown: true,
+                    headerTitleAlign: 'center',
+                    headerStyle: { backgroundColor: '#567C8D' },
+                    headerTintColor: '#F5EFEB',
+                }}
             />
             <Stack.Screen
                 name = 'Excluir_Mac'
                 component={Excluir_macAddress}
-                options={{headerShown: false}}
+                options={{
+                    title: 'Excluir Mac Address (Dispositivo)',
+                    headerShown: true,
+                    headerTitleAlign: 'center',
+                    headerStyle: { backgroundColor: '#567C8D' },
+                    headerTintColor: '#F5EFEB',
+                }}
             />
             <Stack.Screen
                 name = 'Excluir_Grupo'
                 component={ExcluirGrupo}
-                options={{headerShown: false}}
+                options={{
+                    title: 'Excluir Grupo',
+                    headerShown: true,
+                    headerTitleAlign: 'center',
+                    headerStyle: { backgroundColor: '#567C8D' },
+                    headerTintColor: '#F5EFEB',
+                }}
             />
              <Stack.Screen
                 name = 'Adicionar_Dispositivo'
                 component={AdicionarDispositivos}
-                options={{headerShown: false}}
+                options={{
+                    title: 'Adicionar Mac Address (Dispositivo)',
+                    headerShown: true,
+                    headerTitleAlign: 'center',
+                    headerStyle: { backgroundColor: '#567C8D' },
+                    headerTintColor: '#F5EFEB',
+                }}
             />
              <Stack.Screen
                 name = 'Tela_Explicacao'
@@ -49,17 +74,46 @@ export default function Rotas(){
             <Stack.Screen
                 name = 'Cadastrar_Grupo'
                 component={CadastrarGrupos}
-                options={{headerShown: false}}
+                options={{
+                    title: 'Cadastrar Grupo',
+                    headerShown: true,
+                    headerTitleAlign: 'center',
+                    headerStyle: { backgroundColor: '#567C8D' },
+                    headerTintColor: '#F5EFEB',
+                }}
             />
             <Stack.Screen
                 name = 'Desbloquear_Sites'
                 component={Desbloquear_Sites}
-                options={{headerShown: false}}
+                 options={{
+                    title: 'Desbloquear Site',
+                    headerShown: true,
+                    headerTitleAlign: 'center',
+                    headerStyle: { backgroundColor: '#567C8D' },
+                    headerTintColor: '#F5EFEB',
+                }}
             />
             <Stack.Screen
                 name = 'Lista_De_Bloqueio'
                 component={Desbloquear}
-                options={{headerShown: false}}
+                 options={{
+                    title: 'Lista de Sites Bloqueados',
+                    headerShown: true,
+                    headerTitleAlign: 'center',
+                    headerStyle: { backgroundColor: '#567C8D' },
+                    headerTintColor: '#F5EFEB',
+                }}
+            />
+            <Stack.Screen
+                name = 'Tela_Como_Achar_Mac'
+                component={TelaComoAcharMacAddress}
+                 options={{
+                    title: 'Como Achar o MAC Address',
+                    headerShown: true,
+                    headerTitleAlign: 'center',
+                    headerStyle: { backgroundColor: '#567C8D' },
+                    headerTintColor: '#F5EFEB',
+                }}
             />
             <Stack.Screen
                 name = 'Tabs'

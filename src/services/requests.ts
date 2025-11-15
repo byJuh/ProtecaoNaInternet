@@ -52,12 +52,20 @@ export const getRegistro = async function (macAddress: string, signal: AbortSign
             if(data['status'] === 'ok'){
                 if(Array.isArray(data['message'])) {
                     if(data['message'].length > 0){
-                        return data['message']
+                        // Remover duplicatas com Set e mapear de volta para o formato Registro
+                        const registros: Registro[] = Array.from(
+                            new Set(
+                                data['message'].map((item: any) => item.Domain) 
+                            )
+                        ).map(domain => ({ domain })); // mapeia de volta para o formato Registro
+
+                        return registros;
+                    }
                     }else{
                         Alert.alert("Nenhum registro encontrado")
                         return []
                     }
-                } 
+                
             } else {
                 Alert.alert('Erro', data['message']);
             }
@@ -65,6 +73,7 @@ export const getRegistro = async function (macAddress: string, signal: AbortSign
             Alert.alert("Erro", "Erro ao tentar pegar os sites!!");
             return []
         }
+        
       return [];
     }catch(error: unknown){
         if (error instanceof DOMException && error.name === 'AbortError') {

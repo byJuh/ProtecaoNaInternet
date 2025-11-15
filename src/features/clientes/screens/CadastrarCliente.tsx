@@ -19,14 +19,9 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
   const [macAddress, setMacAddress] = useState("");
   const [nomeDispositivo, setNomeDispositivo] = useState("");
 
-  //const onChangeMacAddressHandler = async (macAddress: string) => setMacAddress(macAddress);
-
   const onChangeNomeDispositivoHandler = async (nomeDispositivo: string) => setNomeDispositivo(nomeDispositivo);
 
-  //REVER
   const formatMacAddress = (macAddress: string) => {
-
-      //ERRO AQUI, VERIFICAR -> MENOS QUE 12 CARACTERES FUNCIONA, NAO DEVERIA
       const macAddressFormated = macAddress.toUpperCase().replace(/[^a-fA-F0-9]/g, '').match(/.{1,2}/g)?.join(":") ?? '';
       setMacAddress(macAddressFormated);
   } 
@@ -38,6 +33,12 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
     }
 
     try{
+
+      if(macAddress.length !== 17){
+        Alert.alert("Erro", "Mac Address inválido!!");
+        return;
+      }
+
       const dispositivos = carregarDispositivos(nomeGrupo)
       
       if(dispositivos && dispositivos.find(d => d.mac == macAddress)){
@@ -54,10 +55,10 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
         return;
       }
       
-      salvarDispositivos(nomeDispositivo, macAddress, nomeGrupo)
       const response = await addClient(macAddress, nomeGrupo)
       
       if(response){
+        salvarDispositivos(nomeDispositivo, macAddress, nomeGrupo);
         Alert.alert("Sucesso", response,
           [
             {text: 'Ok', onPress: () => {
@@ -70,7 +71,6 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
         );
       } else {
         Alert.alert("Erro", "Erro ao salvar o dispositivo!!");
-        deletarDispositivo(nomeDispositivo, macAddress, nomeGrupo);
       }
     }catch (error){
       if(error instanceof Error) {
@@ -105,7 +105,7 @@ export default function Cadastro_cliente({ route } : {route: RouteProps}){
               onChangeText={onChangeNomeDispositivoHandler}
               testID="input-nomeDispositivo"
           />
-          <TouchableOpacity accessibilityRole="button">
+          <TouchableOpacity accessibilityRole="button" onPress={() => navigation.navigate('Tela_Como_Achar_Mac')}>
             <Text  style={styles.texto}>
               Como encontrar o mac address?
             </Text>    

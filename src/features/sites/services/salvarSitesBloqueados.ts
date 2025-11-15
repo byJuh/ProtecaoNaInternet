@@ -8,9 +8,6 @@ export function salvarSitesBloqueados(grupo: string, sites: string){
         
         let grupos: GruposSitesBloqueados = gruposSalvos ? JSON.parse(gruposSalvos) : {};
 
-        // Alert.alert("Salvar site bloqueado", `Grupo: ${grupo} - Site: ${sites}`);
-        // Alert.alert("Grupos atuais", JSON.stringify(grupos));
-    
         if(grupos[grupo]) {
             // Se o grupo existe, ACRESCENTA os novos sites aos existentes
             const sitesExistentes = grupos[grupo].sitesBloqueados;

@@ -7,10 +7,14 @@ import Cadastro_cliente from "./CadastrarCliente";
 import { RouteProp } from "@react-navigation/native";
 import { Dispositivo, RootStackParamList } from "../../../utils/types";
 
+jest.mock('uuid', () => ({
+  v4: () => 'mocked-uuid'
+}));
+
 jest.mock("react-native-mmkv-storage");
 jest.mock('@react-navigation/native-stack');
-jest.mock('../../services/requests');
-jest.mock('../../services/salvarDispostivos');
+jest.mock('../../../services/requests');
+jest.mock('../../../services/salvarDispostivos');
 jest.mock('react-native-picker-select', () => 'RNPickerSelect');
 
 const mockNavigate= jest.fn();
@@ -19,6 +23,7 @@ jest.mock('@react-navigation/native', () => ({
     navigate: mockNavigate
   })
 }));
+
 
 describe('Testando tela de cadastrar cliente', () => {
     const mockRoute: RouteProp<RootStackParamList, 'Cadastrar_Mac'> = {
@@ -68,8 +73,7 @@ describe('Testando tela de cadastrar cliente', () => {
         fireEvent.press(button);
 
         expect(carregarDispositivos).toHaveBeenCalledWith(nomeGrupo);
-        expect(salvarDispositivos).toHaveBeenCalledWith(inputNome.props.value, inputMac.props.value, nomeGrupo);
-
+    
         await waitFor(() => {
             expect(addClient).toHaveBeenCalledWith(inputMac.props.value, nomeGrupo);
         })
@@ -81,6 +85,8 @@ describe('Testando tela de cadastrar cliente', () => {
                 expect.objectContaining({ text: 'Ok' })
             ])
         );
+
+        expect(salvarDispositivos).toHaveBeenCalledWith(inputNome.props.value, inputMac.props.value, nomeGrupo);
 
         const confirmAlert = (Alert.alert as jest.Mock).mock.calls[0][2].find((b: { text: string; }) => b.text === 'Ok');
         await act(async () => {
@@ -220,7 +226,7 @@ describe('Testando tela de cadastrar cliente', () => {
         (salvarDispositivos as jest.Mock).mockImplementation(() => {
             throw new Error("Erro ao salvar dispostivo");
         });
-        (deletarDispositivo as jest.Mock).mockReturnValue(() => {});
+        (addClient as jest.Mock).mockResolvedValue('Cliente 11:22:33:C4:A4:55 foi inserido no grupo Grupo com sucesso')
         
         const { getByTestId, getByRole } = render(<Cadastro_cliente route={mockRoute}/>);
         
@@ -236,12 +242,17 @@ describe('Testando tela de cadastrar cliente', () => {
         fireEvent.press(button);
 
         expect(carregarDispositivos).toHaveBeenCalledWith(nomeGrupo);
+
+        expect(carregarDispositivos).toHaveBeenCalledWith(nomeGrupo);
+    
+        await waitFor(() => {
+            expect(addClient).toHaveBeenCalledWith(inputMac.props.value, nomeGrupo);
+        })
+
         expect(salvarDispositivos).toHaveBeenCalledWith(inputNome.props.value, inputMac.props.value, nomeGrupo);
 
         expect(Alert.alert).toHaveBeenCalledWith('Erro', "Erro ao salvar dispostivo");
-        //expect(deletarDispositivo).toHaveBeenCalledWith(inputNome.props.value, inputMac.props.value, nomeGrupo);
 
-        expect(addClient).not.toHaveBeenCalled();
         expect(mockNavigate).not.toHaveBeenCalled();
 
     });
@@ -309,10 +320,11 @@ describe('Testando tela de cadastrar cliente', () => {
 
        
         expect(carregarDispositivos).toHaveBeenCalledWith(nomeGrupo);
-        expect(salvarDispositivos).toHaveBeenCalledWith(inputNome.props.value, inputMac.props.value, nomeGrupo);
 
         expect(addClient).toHaveBeenCalledWith(inputMac.props.value, nomeGrupo);
 
+        
+        expect(salvarDispositivos).not.toHaveBeenCalled();
         expect(Alert.alert).toHaveBeenCalledWith('Erro', "Erro de rede: Network Request Failed");
         expect(mockNavigate).not.toHaveBeenCalled();
 
@@ -347,18 +359,74 @@ describe('Testando tela de cadastrar cliente', () => {
 
        
         expect(carregarDispositivos).toHaveBeenCalledWith(nomeGrupo);
-        expect(salvarDispositivos).toHaveBeenCalledWith(inputNome.props.value, inputMac.props.value, nomeGrupo);
 
         await waitFor(() => {
             expect(addClient).toHaveBeenCalledWith(inputMac.props.value, nomeGrupo);
         });
        
+        
+        expect(salvarDispositivos).not.toHaveBeenCalled();
         expect(Alert.alert).toHaveBeenCalledWith('Erro', "Erro ao salvar o dispositivo!!");
-        expect(deletarDispositivo).toHaveBeenCalledWith(inputNome.props.value, inputMac.props.value, nomeGrupo);
 
         expect(mockNavigate).not.toHaveBeenCalled();
-
-        
         
     });
+
+    it('Testando o botão "Como encontrar o mac address?"', () => {
+        const { getByText } = render(<Cadastro_cliente route={mockRoute} />);
+
+        const botao = getByText('Como encontrar o mac address?');
+
+        fireEvent.press(botao);
+
+        expect(mockNavigate).toHaveBeenCalledWith('Tela_Como_Achar_Mac');
+    });
+
+    it('Testando erro de MAC inválido', async () => {
+        const { getByTestId, getByRole } = render(<Cadastro_cliente route={mockRoute}/>);
+
+        const inputMac = getByTestId('input-macAddress');
+        fireEvent.changeText(inputMac, '11:22');
+
+        const inputNome = getByTestId('input-nomeDispositivo');
+        fireEvent.changeText(inputNome, 'Celular');
+
+        const button = getByRole('button', {name: 'Adicionar'});
+        fireEvent.press(button);
+
+        expect(Alert.alert).toHaveBeenCalledWith("Erro", "Mac Address inválido!!");
+
+        expect(addClient).not.toHaveBeenCalled();
+        expect(salvarDispositivos).not.toHaveBeenCalled();
+        expect(mockNavigate).not.toHaveBeenCalled();
+    });
+
+    it('Testando quando carregarDispositivos retorna null', async () => {
+
+        (carregarDispositivos as jest.Mock).mockReturnValue(null);
+        (addClient as jest.Mock).mockResolvedValue('OK');
+        (salvarDispositivos as jest.Mock).mockImplementation(() => {});
+
+        const { getByTestId, getByRole } = render(<Cadastro_cliente route={mockRoute}/>);
+
+        fireEvent.changeText(getByTestId('input-macAddress'), '11:22:33:AA:BB:CC');
+        fireEvent.changeText(getByTestId('input-nomeDispositivo'), 'Celular');
+
+        fireEvent.press(getByRole('button', { name: 'Adicionar' }));
+
+        expect(addClient).toHaveBeenCalled();
+        expect(salvarDispositivos).not.toHaveBeenCalled();
+        expect(Alert.alert).not.toHaveBeenCalled();
+    });
+
+    it('Testando formatação do MAC address', () => {
+        const { getByTestId } = render(<Cadastro_cliente route={mockRoute} />);
+
+        const inputMac = getByTestId('input-macAddress');
+
+        fireEvent.changeText(inputMac, '112233aabbcc');
+
+        expect(inputMac.props.value).toBe('11:22:33:AA:BB:CC');
+    });
+
 });
