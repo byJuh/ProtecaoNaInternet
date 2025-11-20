@@ -2,12 +2,12 @@ import { Alert } from "react-native";
 import { Dispositivo } from "../utils/types";
 import getDispositivos from "./useCarregarDispositivos";
 
-jest.mock("../salvarDispostivos");
+jest.mock("./salvarDispostivos");
 jest.mock("react-native-mmkv-storage");
 
 describe('Testando o getDispositivo', () => {
     const mockSetDispositivos = jest.fn();
-    const { carregarDispositivos } = require("../salvarDispostivos");
+    const { carregarDispositivos } = require("./salvarDispostivos");
 
     beforeEach(() =>{
         jest.clearAllMocks();

@@ -2,7 +2,7 @@ import { Alert } from "react-native";
 import pegandoRegistros from "./useCarregarListaDeSites";
 import { Registro } from "../../../utils/types";
 
-jest.mock("../requests");
+jest.mock("../../../services/requests");
 
 const mockSignal = {
     aborted: false,

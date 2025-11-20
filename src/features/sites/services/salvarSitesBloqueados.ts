@@ -95,3 +95,16 @@ export function deletarSiteDoGrupo(nomeGrupo: string, site: string) {
         throw new Error("Erro ao deletar site do grupo.");
     }
 }
+
+export function deletarGrupoDeSitesBloqueados(nomeGrupo: string) {
+    try{
+        const sitesBloqueadosSalvos = MMKV.getString('gruposSitesBloqueados');
+        const grupos: GruposSitesBloqueados = sitesBloqueadosSalvos ? JSON.parse(sitesBloqueadosSalvos) : {};   
+        if(grupos[nomeGrupo]){
+            delete grupos[nomeGrupo];
+            MMKV.setString('gruposSitesBloqueados', JSON.stringify(grupos));
+        }
+    }catch(error){
+        throw new Error("Erro ao deletar grupo de sites bloqueados.");
+    }
+}

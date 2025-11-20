@@ -49,7 +49,7 @@ export default function Bloquear({ onSelecionarDominio }: { onSelecionarDominio?
           
           const interval = setInterval(() => {
             pegandoRegistros(setRegistros, macAddress, signal);
-          }, 120000)
+          }, 600000); // 600000 ms = 10 minutos
         
           return () => {
             //limpa o tempo, nn fazendo com que realize o comando de get a cada 4 min

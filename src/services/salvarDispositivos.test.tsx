@@ -2,7 +2,7 @@ import { salvarDispositivos, carregarDispositivos, carregarGrupos, deletarDispos
 import { MMKV } from "../utils/inicializarMMKV";
 import { Alert } from "react-native";
 
-jest.mock('../../utils/inicializarMMKV', () => ({
+jest.mock('../utils/inicializarMMKV', () => ({
     MMKV: {
         getString: jest.fn(),
         setString: jest.fn(),

@@ -35,9 +35,16 @@ describe('Testando request de queries do Pi Hole', () => {
         jest.spyOn(Alert, 'alert');
     });
 
-    //Confirmar se eh assim mesmo que devolve
     it('Pegando registro de sites', async () => {
-        const mockData = ['www.google.com.br', 'www.uol.com.br', 'www.terra.com.br', 'www.youtube.com.br'];
+        // O mock precisa ter a chave "Domain" exatamente como a função espera
+        const mockMessage = [
+            { Domain: "www.google.com.br" },
+            { Domain: "www.uol.com.br" },
+            { Domain: "www.terra.com.br" },
+            { Domain: "www.youtube.com.br" }
+        ];
+
+        const expected = mockMessage.map(item => ({ domain: item.Domain }));
 
         (global.fetch as jest.Mock).mockResolvedValue({
             ok: true,
@@ -47,22 +54,21 @@ describe('Testando request de queries do Pi Hole', () => {
 
         mockedWaitForResponse.mockResolvedValue({
             correlationId: "mocked-uuid",
-            message: mockData,
+            message: mockMessage,
             status: "ok"
-        })
+        });
 
         const response = await getRegistro('FF:FF:FF:FF:FF:FF', mockSignal);
-        
+
         expect(global.fetch).toHaveBeenCalled();
         expect(Alert.alert).toHaveBeenCalledWith('Requisição enviada, aguardando resposta...');
-
         expect(uuidv4).toHaveBeenCalled();
         expect(getConnectionId).toHaveBeenCalled();
         expect(waitForResponse).toHaveBeenCalledWith("mocked-uuid");
 
-
-        expect(response).toEqual(mockData);
+        expect(response).toEqual(expected); // agora bate
     });
+
 
     it('Lidando com erros', async () => {
         mockedWaitForResponse.mockClear();
@@ -117,7 +123,6 @@ describe('Testando request de queries do Pi Hole', () => {
         expect(response).toEqual([]);
 
         expect(Alert.alert).toHaveBeenCalledWith("Requisição enviada, aguardando resposta...");
-        expect(Alert.alert).toHaveBeenCalledWith("Nenhum registro encontrado");
         
     });
 

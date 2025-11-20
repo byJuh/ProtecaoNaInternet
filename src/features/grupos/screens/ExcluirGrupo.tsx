@@ -7,6 +7,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { carregarDispositivos, carregarGrupos, deletarGrupo } from "../../../services/salvarDispostivos";
 import { useNavigation } from "@react-navigation/native";
 import { deleteGroup } from "../../../services/requests";
+import { deletarGrupoDeSitesBloqueados } from "../../sites/services/salvarSitesBloqueados";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
@@ -53,6 +54,7 @@ export default function ExcluirGrupo(){
 
         if(response){
           deletarGrupo(grupo)
+          deletarGrupoDeSitesBloqueados(grupo)
           var mensagem = "Grupo: " + grupo + " foi removido!"
           Alert.alert("Removido", 
             mensagem,

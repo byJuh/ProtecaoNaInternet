@@ -81,7 +81,7 @@ export default function TelaComoAcharMacAddress(){
                       👉 28:C5:D2:4C:AA:A9
                   </Text>
                 </View>
-                <SafeAreaView style={[styles.spaceContainerAddBlock, {marginBottom: 100, height: '60%'}]}>
+                <SafeAreaView style={[styles.spaceContainerAddBlock, {marginBottom: 100, height: '50%'}]}>
                     <FlatList
                       data={marcas}
                       renderItem={renderItem}

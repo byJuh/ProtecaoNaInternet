@@ -8,6 +8,7 @@ import React, { act } from 'react';
 import { Dispositivo, Registro } from '../../../utils/types';
 import { useFocusEffect } from '@react-navigation/native';
 import { addDomainBlocklist } from '../../../services/requests';
+import { Alert } from 'react-native';
 
 jest.mock('react-native-picker-select', () => 'RNPickerSelect');
 jest.mock('react-native-bouncy-checkbox', () => 'BouncyCheckbox');
@@ -87,7 +88,6 @@ describe('Testando tela bloquear', ()=> {
 
         const buttonTextDesbloqueio = getByText('Lista de Bloqueio');
         expect(buttonTextDesbloqueio).toBeTruthy();
-        
     });
 });
 
@@ -95,6 +95,7 @@ describe('Testando tela bloquear', ()=> {
 describe('Testando o funcionamento da tela de bloqueio', () => {
     beforeEach(() => {
         jest.useFakeTimers();
+        jest.spyOn(Alert, 'alert');
     });
 
     afterEach(() => {
@@ -110,21 +111,20 @@ describe('Testando o funcionamento da tela de bloqueio', () => {
            callback = cb;
         });
 
-        (fetchGrupos as jest.Mock).mockImplementation((setGrupos, setGruposSelecionados) => {
+        (fetchGrupos as jest.Mock).mockImplementation((setGrupos) => {
             const grupos = new Map<string, number>([
                 ['Grupo1', 3],
             ]);
             setGrupos(grupos);
-            setGruposSelecionados('Grupo1');
         });
 
-        (fetchDispositivos as jest.Mock).mockImplementation((grupoSelecionado, setMacAddress, setDispositivos) => {
+        (fetchDispositivos as jest.Mock).mockImplementation((grupoSelecionado, setDispositivos) => {
             grupoSelecionado = 'Grupo1';
-            setMacAddress('FF:FF:FF:FF:FF:FF');
 
             const dispositivos: Dispositivo[] = [{
                 nome:'Filho', mac: 'FF:FF:FF:FF:FF:FF'
             }];
+
             setDispositivos(dispositivos);
         });
 
@@ -157,13 +157,9 @@ describe('Testando o funcionamento da tela de bloqueio', () => {
         fireEvent(selectDispositivos, 'onValueChange', 'FF:FF:FF:FF:FF:FF');
         expect(selectDispositivos.props.value).toBe('FF:FF:FF:FF:FF:FF');
          
-        act(() => {
-            callback();
-        });
+        act(() => {callback(); });
 
-        await waitFor(() => {
-            expect(pegandoRegistros).toHaveBeenCalled(); 
-        });
+        await waitFor(() => { expect(pegandoRegistros).toHaveBeenCalled(); });
 
         expect(getByTestId('checkbok-domain-www.google.com.br')).toBeTruthy();
         expect(getByTestId('checkbok-domain-www.uol.com.br')).toBeTruthy();

@@ -3,7 +3,6 @@ global.WebSocket = require("ws");
 import {
   connectWebSocket,
   isConnected,
-  getConnectionId,
 } from "./webSockets";
 
 jest.setTimeout(10000);
