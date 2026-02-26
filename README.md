@@ -16,13 +16,13 @@ A solução foi projetada para auxiliar pais e responsáveis no acompanhamento d
 
 ## 📋 Requisitos do Sistema
 
-→ **Requisito Funcional 1:** Permitir que o usuário visualize os domínios (sites) acessados por um dispositivo (cliente) de um grupo em específico;
-→ **Requisito Funcional 2:** Permitir que o usuário escolha o domínio que deseja bloquear e desbloquear de um grupo;
-→ **Requisito Funcional 3:** Permitir que o usuário crie grupos e associe a ele dispositivos;
-→ **Requisito Funcional 4:** Permitir que o usuário exclua grupos e dispositivos a qualquer momento;
+→ **Requisito Funcional 1:** Permitir que o usuário visualize os domínios (sites) acessados por um dispositivo (cliente) de um grupo em específico;  
+→ **Requisito Funcional 2:** Permitir que o usuário escolha o domínio que deseja bloquear e desbloquear de um grupo;  
+→ **Requisito Funcional 3:** Permitir que o usuário crie grupos e associe a ele dispositivos;  
+→ **Requisito Funcional 4:** Permitir que o usuário exclua grupos e dispositivos a qualquer momento;  
 
-→ **Requisito Não-Funcional 1:** Deve ser acessível via dispositivo móvel (mobile).
-→ **Requisito Não-Funcional 2:** O aplicativo deve apresentar uma interface simples e intuitiva, garantindo a usabilidade para usuários com pouca familiaridade com tecnologia.
+→ **Requisito Não-Funcional 1:** Deve ser acessível via dispositivo móvel (mobile).  
+→ **Requisito Não-Funcional 2:** O aplicativo deve apresentar uma interface simples e intuitiva, garantindo a usabilidade para usuários com pouca familiaridade com tecnologia.  
 
 ## 🏗️ Arquitetura da Solução
 
@@ -136,6 +136,6 @@ O projeto explora conceitos de:
 
 ## 👩🏻‍💻 Autores
 
-**Júlia Schmidt** - https://github.com/byJuh
-**João Pedro Figols** - https://github.com/Jpfigols
-**João Pedro de Souza Oliveira** - https://github.com/Joao-Oliveira9
+**Júlia Schmidt** - https://github.com/byJuh  
+**João Pedro Figols** - https://github.com/Jpfigols  
+**João Pedro de Souza Oliveira** - https://github.com/Joao-Oliveira9  
