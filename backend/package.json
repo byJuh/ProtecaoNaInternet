@@ -1,0 +1,39 @@
+{
+  "name": "parent_control_raspberry-public",
+  "version": "1.0.0",
+  "description": "Sistema de bloqueio de sites para pais",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joao-Oliveira9/parent_control_raspberry-Public.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Joao-Oliveira9/parent_control_raspberry-Public/issues"
+  },
+  "homepage": "https://github.com/Joao-Oliveira9/parent_control_raspberry-Public#readme",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.3.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "aws-iot-device-sdk-v2": "^1.23.1",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mariadb": "^3.4.5",
+    "node-arp": "^1.0.6",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^3.3.2",
+    "sequelize": "^6.37.7"
+  }
+}

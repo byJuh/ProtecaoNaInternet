@@ -1,7 +1,7 @@
 // Array para armazenar os listeners de mensagens
 const listeners: Array<(data: any) => void> = [];
 
-const ws_url = 'wss://379yahvbg7.execute-api.us-east-2.amazonaws.com/getResponse/'
+const ws_url = 'link_do_websocket'; // Substitua pelo URL real do WebSocket
 
 let socket: WebSocket | null = null;
 let connectionId: string | null = null;

@@ -12,7 +12,7 @@ export default function App(){
 
     const initWebSocket = async () => {
       try {
-        const connectionId = await connectWebSocket();
+        await connectWebSocket();
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         Alert.alert('❌', `Erro: ${errorMessage}`);
