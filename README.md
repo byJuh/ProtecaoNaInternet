@@ -56,13 +56,19 @@ Funcionalidades:
 - Visualização de histórico de acessos  
 - Bloqueio e desbloqueio de domínios
 
-Telas Criadas:
+## Telas - Introdução  
 
-  <img width="772" height="358" alt="image" src="https://github.com/user-attachments/assets/0070e3ed-2521-4a55-968c-eea35af02fe4" />  
+  <img width="772" height="358" alt="image" src="https://github.com/user-attachments/assets/0070e3ed-2521-4a55-968c-eea35af02fe4" />   
+
+## Telas - Desbloqueio  
 
   <img width="363" height="361" alt="image" src="https://github.com/user-attachments/assets/b50fc2a8-827c-4e8e-b32f-410feb61ef38" />  
 
+## Telas - Gerenciamento de Grupos  
+
   <img width="556" height="361" alt="image" src="https://github.com/user-attachments/assets/496299a8-fa8f-4e9e-ad58-f333058f4659" />  
+
+## Telas - Gerenciamento de Dispositivos  
 
   <img width="752" height="355" alt="image" src="https://github.com/user-attachments/assets/a4ddb0f0-4f69-4b2b-994e-25be2d88baab" />  
 
